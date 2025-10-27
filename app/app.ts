@@ -475,18 +475,18 @@ function updateTransferResults() {
     let toId = getSelectedAgencyId(toVal);
     if (!fromId || !toId) continue;
 
+    const nextFare = getFare(agencyInputs[i+1], toId);
+    if (!nextFare) {
+      continue;
+    }
+
     // Golden Gate Ferry: transfer rules are global, not by line, so we need to trim the line suffix (GF:SSSF -> GF)
     if (fromId.startsWith("GF")) { fromId = "GF" };
     if (toId.startsWith("GF")) { toId = "GF" };
   
     // take the first match as the correct match
     const transferRule = fareRules.filter(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId)[0];
-
     const discount = fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount;
-    const nextFare = getFare(agencyInputs[i+1], toId);
-    if (!nextFare) {
-      continue;
-    }
   
     appendLegDetails(resultsDiv, nextFare, agencyInputs[i+1], toId, discount, i+1);
 
