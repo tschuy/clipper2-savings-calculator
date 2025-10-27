@@ -1,0 +1,136 @@
+body {
+    font-family: system-ui, sans-serif;
+    margin: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+html {
+    height: 100%;
+}
+
+.container {
+    margin: auto;
+    width: 1600px;
+}
+
+#prose {
+    max-width: 800px;
+}
+
+#agencyListContainer {
+    max-width: 50vw;
+}
+
+label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+input {
+    width: calc(100% - 2rem);
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+button {
+    margin-top: 0.5rem;
+}
+
+select {
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    max-width: calc(100% - 3rem);
+}
+
+.extraField {
+    margin-left: 3rem;
+    margin-bottom: 1rem;
+} 
+
+#app {
+    display: flex;
+    flex-direction: row;
+}
+
+.input-column {
+    min-width: 400px;
+    padding-right: 3rem;
+}
+
+.left-column {
+    margin-right: 2rem;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-container div {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.output {
+    display: none;
+}
+
+#comparison {
+    margin: 2rem;
+    justify-content: center;
+    align-items: center;
+}
+
+#comparison > div {
+    display: inline;
+}
+
+#comparison > div > h2 {
+    display: inline;
+}
+
+#share-div {
+    align-items: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+@media (max-width: 1000px) {
+    body {
+        margin: 0.5rem;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 750px;
+    }
+
+    select {
+        max-width: calc(100vw - 5rem);
+    }
+
+    input {
+        width: calc(100vw - 3rem);
+        max-width: 750px;
+    }
+
+    .flex-container {
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+    }
+
+    #app {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #comparison {
+        display: block;
+    }
+}

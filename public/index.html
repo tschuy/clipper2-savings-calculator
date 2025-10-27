@@ -1,12 +1,43 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Hello, World!</title>
-	</head>
-	<body>
-		<h1 id="heading">Hello, World!</h1>
-		<p>This page comes from a static asset stored at `public/index.html` as configured in `wrangler.jsonc`.</p>
-	</body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clipper 2.0 Savings Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+  <h1>Clipper 2.0 Savings Calculator</h1>
+  <div id="prose">
+    <p>In December, the Bay Area's transit card is getting an upgrade.</p>
+    <p>Instead of being penalized when changing from a bus to a train, or from one agency to another, Clipper 2.0 comes with free transfers. This means that no matter where you're going in the region, there's no need to worry about getting overcharged.</p>
+    <p>Interested in finding out how much you can save on your trips? Use this trip calculator to find out how much you can save in transfers starting December 10th.</p>
+  </div>
+  <div id="app">
+    <div class="input-column">
+      <div id="agencyListContainer"></div>
+      <datalist id="agencyDatalist"></datalist>
+    </div>
+    <div class="output-column output">
+      <div class="flex-container">
+        <div class="column left-column">
+          <h2>Before&nbsp;Clipper&nbsp;2.0</h2>
+          <div id="results"></div>
+          <div id="final-results"></div>
+        </div>
+        <div>
+          <h2>After&nbsp;Clipper&nbsp;2.0</h2>
+          <div id="results-c2"></div>
+          <div id="final-results-c2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="output"><div id="comparison">With Clipper 2.0, you'll save...&nbsp;&nbsp;<div id="comparison-inner"><h2>$0.00</h2></div>&nbsp;&nbsp;per trip. That's&nbsp;&nbsp;<div id="comparison-inner-annual"><h2>$0.00</h2></div>&nbsp;&nbsp;over a year's commute (500 trips)!</div>
+  <div id="share-div"><button id="share">Share your trip savings!</button><button id="clear">Start over</button></div>
+  </div></div>
+  <script type="module" src="app.js"></script>
+</body>
 </html>
