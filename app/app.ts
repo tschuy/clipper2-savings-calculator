@@ -486,7 +486,7 @@ function updateTransferResults() {
   
     // take the first match as the correct match
     const transferRule = fareRules.filter(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId)[0];
-    const discount = fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount;
+    const discount = transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount : undefined;
   
     appendLegDetails(resultsDiv, nextFare, agencyInputs[i+1], toId, discount, i+1);
 
