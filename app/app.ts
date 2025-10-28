@@ -247,17 +247,13 @@ function initializeInput() {
   agencyListContainer.style.display = "block";
   if (window.location.hash) {
     const segments = window.location.hash.slice(1).split("#");
-    console.log(segments);
     for (const segment of segments) {
       const legInfo = segment.split(';');
-      console.log(legInfo);
       addAgencyInput(legInfo[0]);
-      console.log("?")
       if (legInfo.length === 3) {
         const from = decodeURIComponent(legInfo[1]);
         const to = decodeURIComponent(legInfo[2]);
         const ai = agencyInputs[agencyInputs.length-1];
-        console.log(from, to);
         ai.extraFrom.selectedIndex = Array.from(ai.extraFrom.options).findIndex(opt => opt instanceof HTMLOptionElement && opt.value === from);
         ai.extraTo.selectedIndex = Array.from(ai.extraTo.options).findIndex(opt => opt instanceof HTMLOptionElement && opt.value === to);
       }
@@ -397,19 +393,19 @@ function getFareForAgency(input: string): FareProduct[] {
 // dynamic / zonal fares, ex: BART, Caltrain
 function calculateFare(agencyId, from, to): number | undefined {
   if (["GG", "SO", "SA", "CT"].includes(agencyId)) {
-    return fareProducts.filter(
+    return (fareProducts.filter(
       (fare) =>
       fare.fare_media_id === "clipper" &&
       fare.rider_category_id === "adult" &&
       (fare.fare_product_id === `${agencyId}:matrix:${agencyId}:${from}-${agencyId}:${to}` || fare.fare_product_id === `${agencyId}:matrix:${agencyId}:${to}-${agencyId}:${from}`)
-    )[0].amount;
+    )[0] || {})?.amount;
   } else if (agencyId == "BA") {
-    return fareProducts.filter(
+    return (fareProducts.filter(
       (fare) =>
       fare.fare_media_id === "clipper" &&
       fare.rider_category_id === "adult" &&
       fare.fare_product_id === `BA:matrix:${from}-${to}`
-    )[0].amount;
+    )[0] || {})?.amount;
   }
   return undefined;
 }
@@ -591,7 +587,6 @@ share?.addEventListener("click", async () => {
     text: `I'm going to save $${comparisonAnnualDiv.innerText} every year with Clipper 2.0! How much will you save?`,
     url: `${window.location.origin}/${urlHash}`,
   };
-  console.log(shareData.url);
   if (navigator.share) {
     try {
       await navigator.share(shareData);
