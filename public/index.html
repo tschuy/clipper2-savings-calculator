@@ -1,34 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Clipper 2.0 Savings Calculator</title>
-      <script src="https://cdn.tailwindcss.com"></script>
-      <style> :root { --transbay-red: #CC1939; --bay-gold: #ffb81c; --muted-teal: #4DB6AC; } </style>
-   </head>
-   <body class="bg-slate-50 text-slate-900 flex flex-col min-h-screen">
-      <header id="header" class="bg-[var(--transbay-red)] text-white py-4 shadow-md sticky top-0 z-10">
-         <div class="max-w-6xl mx-auto flex justify-between items-center px-4">
-            <h1 class="text-2xl font-bold">Clipper 2.0 Savings Calculator</h1>
-         </div>
-      </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clipper 2.0 Savings Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-<section class="bg-[var(--muted-teal)] text-white py-16">
+  <style>
+    :root {
+      --font-heading: 'Poppins', sans-serif;
+      --font-body: 'Work Sans', sans-serif;
+    --transbay-red: #CC1939;
+    --bay-gold: #ffb81c;
+    --muted-teal: #4DB6AC;
+    }
+
+    body {
+      font-family: var(--font-body);
+    }
+
+    h1,h2,h3,h4,h5,h6,button {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+  </style>
+
+</head>
+<body class="bg-slate-50 text-slate-900 flex flex-col min-h-screen">
+  <header id="header" class="bg-[var(--transbay-red)] text-white py-4 shadow-md sticky top-0 z-10">
+      <div class="max-w-6xl mx-auto flex justify-between items-center px-4">
+        <h1 class="text-2xl font-bold">Clipper 2.0 Savings Calculator</h1>
+      </div>
+  </header>
+
+  <section class="bg-[var(--muted-teal)] text-white py-16">
     <div class="max-w-6xl mx-auto px-4 text-center md:text-left">
-      <p class="mb-4">
+      <p class="mb-4 text-xl">
         In December, the Bay Area's transit card is getting an upgrade.
       </p>
-      <p class="mb-4">
+      <p class="mb-4 text-lg">
         Instead of being penalized when changing from a bus to a train, or from one agency to another, Clipper 2.0 comes with free transfers. This means that no matter where you're going in the region, there's no need to worry about getting overcharged.
       </p>
-      <p class="mb-6">
+      <p class="mb-6 text-lg">
         Interested in finding out how much you can save on your trips? Use this trip calculator to find out how much you can save in transfers starting December 10th.
       </p>
     </div>
   </section>
 
-  <section id="app" class="max-w-6xl mx-auto px-4 py-12 flex flex-col xl:flex-row gap-8">
+  <section id="app" class="max-w-7xl mx-auto px-4 py-12 flex flex-col xl:flex-row gap-8">
     <div class="flex-1 min-w-0 bg-white p-6 rounded-2xl shadow-md">
       <h3 class="text-2xl font-semibold mb-4 text-[var(--transbay-red)]">Your Trip</h3>
       <div id="agencyListContainer"></div>
@@ -40,12 +61,12 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-lg text-left min-w-0">
         <div class="min-w-0">
-          <h4 class="text-lg font-semibold mb-2 text-slate-600">Before Clipper 2.0</h4>
+          <h4 class="text-lg font-semibold mb-2 text-slate-600 text-nowrap">Before Clipper 2.0</h4>
           <div id="results"></div>
           <div id="final-results"></div>
         </div>
         <div class="min-w-0">
-          <h4 class="text-lg font-semibold mb-2 text-slate-600">After Clipper 2.0</h4>
+          <h4 class="text-lg font-semibold mb-2 text-slate-600 text-nowrap">After Clipper 2.0</h4>
           <div id="results-c2"></div>
           <div id="final-results-c2"></div>
         </div>
