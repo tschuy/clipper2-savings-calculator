@@ -198,7 +198,6 @@ function populateAgencyDatalist() {
 
   for (const a of agencies) {
     if (exlcudedAgencies.includes(a.Id)) continue;
-    console.log("adding", a);
     const nickname = agencyNicknames[a.Id] ?? null;
     const label = nickname
       ? `${nickname} - ${a.Name} (${a.Id})`
@@ -568,6 +567,8 @@ function updateTransferResults() {
   const spancompAnnual = document.createElement("span");
   spancompAnnual.textContent = `$${(savings*500).toFixed(2)}`;
   comparisonAnnualDiv.appendChild(spancompAnnual);
+
+  window.location.hash = calculateUrlHash().slice(1);
 }
 
 /*
@@ -575,14 +576,14 @@ function updateTransferResults() {
 */
 const clear = document.getElementById("clear");
 clear?.addEventListener("click", async () => {
+  window.location.hash = "";
   agencyInputs.length = 0;
   agencyListContainer.innerHTML = "";
   addAgencyInput();
   updateTransferResults();
 })
 
-const share = document.getElementById("share");
-share?.addEventListener("click", async () => {
+function calculateUrlHash() {
   let urlHash = "";
   for (const ai of agencyInputs) {
     if (!ai.input.value.trim()) {
@@ -599,6 +600,12 @@ share?.addEventListener("click", async () => {
       urlHash += ai.extraTo.options[ai.extraTo.selectedIndex].value;
     }
   }
+  return urlHash;
+}
+
+const share = document.getElementById("share");
+share?.addEventListener("click", async () => {
+  const urlHash = calculateUrlHash();
   const shareData = {
     title: "Clipper 2.0 Savings Calculator",
     text: `I'm going to save ${comparisonAnnualDiv.innerText} every year with Clipper 2.0! How much will you save?\n`,
