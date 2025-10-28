@@ -58,27 +58,28 @@
 
     <div class="flex-1 min-w-0 bg-white p-6 rounded-2xl shadow-md">
       <h3 class="text-2xl font-semibold mb-4 text-[var(--transbay-red)]">Your Savings</h3>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-lg text-left min-w-0">
-        <div class="min-w-0">
-          <h4 class="text-lg font-semibold mb-2 text-slate-600 text-nowrap">Before Clipper 2.0</h4>
-          <div id="results"></div>
-          <div id="final-results"></div>
+      <div class="output">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-lg text-left min-w-0">
+          <div class="min-w-0">
+            <h4 class="text-lg font-semibold mb-2 text-slate-600 text-nowrap">Before Clipper 2.0</h4>
+            <div id="results"></div>
+            <div id="final-results"></div>
+          </div>
+          <div class="min-w-0">
+            <h4 class="text-lg font-semibold mb-2 text-slate-600 text-nowrap">After Clipper 2.0</h4>
+            <div id="results-c2"></div>
+            <div id="final-results-c2"></div>
+          </div>
         </div>
-        <div class="min-w-0">
-          <h4 class="text-lg font-semibold mb-2 text-slate-600 text-nowrap">After Clipper 2.0</h4>
-          <div id="results-c2"></div>
+
+        <div class="text-center mt-6">
+          <h4 class="text-2xl font-semibold mb-2 text-slate-600">Total Savings</h4>
+          <div class="text-xl break-words">
+            With Clipper 2.0, you'll save <span id="comparison-inner" class="font-bold text-[var(--bay-gold)]">$—</span> per trip.<br/>
+            That's <span id="comparison-inner-annual" class="font-bold text-[var(--bay-gold)]">$—</span> over a year's commute (500 trips)!
+          </div>
           <div id="final-results-c2"></div>
         </div>
-      </div>
-
-      <div class="text-center mt-6">
-        <h4 class="text-2xl font-semibold mb-2 text-slate-600">Total Savings</h4>
-        <div class="text-xl break-words">
-          With Clipper 2.0, you'll save <span id="comparison-inner" class="font-bold text-[var(--bay-gold)]">$—</span> per trip.<br/>
-          That's <span id="comparison-inner-annual" class="font-bold text-[var(--bay-gold)]">$—</span> over a year's commute (500 trips)!
-        </div>
-        <div id="final-results-c2"></div>
       </div>
     </div>
   </section>

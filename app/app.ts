@@ -258,12 +258,9 @@ function initializeInput() {
         ai.extraTo.selectedIndex = Array.from(ai.extraTo.options).findIndex(opt => opt instanceof HTMLOptionElement && opt.value === to);
       }
     }
-    addAgencyInput();
-    updateTransferResults();
-  } else {
-    // initialize first input field
-    addAgencyInput();
   }
+  addAgencyInput();
+  updateTransferResults();
 }
 
 // resolve input string to an agency ID
@@ -312,7 +309,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
   if (val === "") {
     // val is empty, so we want to remove the field
     const removalIndex = Array.prototype.indexOf.call(agencyListContainer.children, input.parentElement!);
-    agencyInputs.splice(removalIndex, removalIndex);
+    agencyInputs.splice(removalIndex, 1);
     input.parentElement!.remove();
     updateTransferResults();
     return;
@@ -394,6 +391,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
 
 // static fares, ex: bus fares
 function getFareForAgency(input: string): FareProduct[] {
+  if (!input) {return [] }
   const fare_product_id = input.includes(":") ? `${input}:single` : `${input}:local:single`;
 
   return fareProducts.filter(
@@ -450,7 +448,6 @@ function appendLegDetails(div, fare, agencyInput, agencyId, discount, i) {
   }
   div.appendChild(d);
 }
-
 
 // called when input is updated. calculates running fare totals for both C1 and C2 and creates output displays
 function updateTransferResults() {
