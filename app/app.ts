@@ -593,7 +593,7 @@ share?.addEventListener("click", async () => {
   }
   const shareData = {
     title: "Clipper 2.0 Savings Calculator",
-    text: `I'm going to save $${comparisonAnnualDiv.innerText} every year with Clipper 2.0! How much will you save?`,
+    text: `I'm going to save ${comparisonAnnualDiv.innerText} every year with Clipper 2.0! How much will you save?\n`,
     url: `${window.location.origin}/${urlHash}`,
   };
   if (navigator.share) {
