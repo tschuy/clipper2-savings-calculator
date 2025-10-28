@@ -94,10 +94,10 @@ interface ExtraFieldConfig {
 }
 
 const agencyExtraFields: Record<string, ExtraFieldConfig> = {
-  "BA": { type: "station", labelFrom: "Starting station", labelTo: "Ending station", options: bartStops },
+  "BA": { type: "station", labelFrom: "From", labelTo: "To", options: bartStops },
   "GG": { type: "zone", labelFrom: "Starting zone", labelTo: "Ending zone", options: ggtZones },
   "CT": { type: "zone", labelFrom: "Starting zone", labelTo: "Ending zone", options: caltrainZones },
-  "SA": { type: "zone", labelFrom: "Starting station", labelTo: "Ending station", options: smartZones },
+  "SA": { type: "zone", labelFrom: "From", labelTo: "To", options: smartZones },
   "SO": { type: "zone", labelFrom: "Starting zone", labelTo: "Ending zone", options: SOZones },
 };
 
@@ -260,6 +260,7 @@ function initializeInput() {
         ai.extraTo.selectedIndex = Array.from(ai.extraTo.options).findIndex(opt => opt instanceof HTMLOptionElement && opt.value === to);
       }
     }
+    window.location.hash = "";
   }
   addAgencyInput();
   updateTransferResults();
@@ -436,15 +437,20 @@ function getFare(agencyInput, agencyId): number | undefined {
 }
 
 // add a leg to the output display
-function appendLegDetails(div, fare, agencyInput, agencyId, discount, i) {
+function appendLegDetails(div, agencyId, fare, discount, i) {
   const spanLeg = document.createElement("span");
   spanLeg.className = "font-bold mt-6";
   spanLeg.textContent = `Leg ${i + 1}: ${getSelectedAgencyById(agencyId)?.Name}`;
   div.appendChild(spanLeg);
   const d = document.createElement("div");
   if (discount !== undefined) {
-    if (discount >= 0) d.innerHTML = `Base fare: $${fare.toFixed(2)}<br>Transfer discount: -$${(discount-fare).toFixed(2)}<br><b>Subtotal fare:</b> $${discount.toFixed(2)}`
-    else d.innerHTML = `Base fare: $${fare.toFixed(2)}<br>Transfer discount: -$${Math.min(fare, -discount).toFixed(2)}<br><b>Subtotal fare:</b> $${Math.max(0, fare+discount).toFixed(2)}`
+    if (discount >= 0) {
+      d.innerHTML = `Base fare: $${fare.toFixed(2)}<br>Transfer discount: -$${(fare - discount).toFixed(2)}<br><b>Subtotal fare:</b> $${discount.toFixed(2)}`
+    } else {
+      const discountedFare = Math.max(0, fare + discount);
+      const discountValue = fare - discountedFare;
+      d.innerHTML = `Base fare: $${fare.toFixed(2)}<br>Transfer discount: -$${discountValue.toFixed(2)}<br><b>Subtotal fare:</b> $${discountedFare.toFixed(2)}`
+    }
   } else {
     d.textContent = `Fare: $${fare.toFixed(2)}`
   }
@@ -464,17 +470,18 @@ function updateTransferResults() {
     });
   }
 
+  let agencyId = getSelectedAgencyId(agencyInputs[0].input.value.trim());
+
   /*
     Clipper 1 handling
   */
   resultsDiv.innerHTML = "";
-  let agencyId = getSelectedAgencyId(agencyInputs[0].input.value.trim());
   const fare = getFare(agencyInputs[0], agencyId);
   if (!fare) {
     return;
   }
   let runningTotal = fare;
-  appendLegDetails(resultsDiv, fare, agencyInputs[0], agencyId, undefined, 0);
+  appendLegDetails(resultsDiv, agencyId, fare, undefined, 0);
 
   for (let i = 0; i < agencyInputs.length - 1; i++) {
     const fromVal = agencyInputs[i].input.value.trim();
@@ -498,14 +505,17 @@ function updateTransferResults() {
     const transferRule = fareRules.filter(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId)[0];
     const discount = transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount : undefined;
   
-    appendLegDetails(resultsDiv, nextFare, agencyInputs[i+1], toId, discount, i+1);
+    appendLegDetails(resultsDiv, toId, nextFare, discount, i+1);
 
     if (discount !== undefined) {
+      // positive discount is a replacement fare
       if (discount > 0) {
         runningTotal += discount;
+      // negative discount is a fare discount
       } else if (discount < 0 && nextFare > -discount) {
         runningTotal = runningTotal + nextFare + discount;
       }
+    // no discount is no discount
     } else {
       runningTotal += nextFare;
     }
@@ -526,7 +536,7 @@ function updateTransferResults() {
   if (!runningTotalC2) {
     return;
   }
-  appendLegDetails(resultsC2Div, runningTotalC2, agencyInputs[0], agencyId, undefined, 0);
+  appendLegDetails(resultsC2Div, agencyId, runningTotalC2, undefined, 0);
 
   let previousFare = runningTotalC2!;
   let discount;
@@ -541,7 +551,7 @@ function updateTransferResults() {
     if (!runningTotalC2) {
       continue;
     }
-    appendLegDetails(resultsC2Div, nextFare, agencyInputs[i], agencyId, discount, i);
+    appendLegDetails(resultsC2Div, agencyId, nextFare, discount, i);
     if (nextFare > 2.85) {
       runningTotalC2 = runningTotalC2 + nextFare + discount;
     }
@@ -567,8 +577,6 @@ function updateTransferResults() {
   const spancompAnnual = document.createElement("span");
   spancompAnnual.textContent = `$${(savings*500).toFixed(2)}`;
   comparisonAnnualDiv.appendChild(spancompAnnual);
-
-  window.location.hash = calculateUrlHash().slice(1);
 }
 
 /*
@@ -608,7 +616,7 @@ share?.addEventListener("click", async () => {
   const urlHash = calculateUrlHash();
   const shareData = {
     title: "Clipper 2.0 Savings Calculator",
-    text: `I'm going to save ${comparisonAnnualDiv.innerText} every year with Clipper 2.0! How much will you save?\n`,
+    text: `I'm could save ${comparisonAnnualDiv.innerText} every year with Clipper 2.0! How much will you save?\n`,
     url: `${window.location.origin}/${urlHash}`,
   };
   if (navigator.share) {
