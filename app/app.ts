@@ -306,22 +306,31 @@ function addAgencyInput(prefill?: string) {
 function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElement, disableInputCreation) {
   const val = input.value.trim();
   const agencyId = getSelectedAgencyId(val);
+  const agencyRef = agencyInputs.find(a => a.input === input);
+
+  if (val === "") {
+    // val is empty, so we want to remove the field
+    const removalIndex = Array.prototype.indexOf.call(agencyListContainer.children, input.parentElement!);
+    agencyInputs.splice(removalIndex, removalIndex);
+    input.parentElement!.remove();
+    updateTransferResults();
+    return;
+  }
 
   if (!agencyId) {
-    console.warn("Unknown agency for input:", val);
+    console.warn("Could not find agencyId for input:", val);
     return;
   }  
+
+  if (!agencyRef) {
+    console.warn("Could not find agencyRef for input:", val);
+    return;
+  }
 
   // Remove previous extra fields if they exist
   containerDiv.querySelectorAll(".extraField").forEach(e => e.remove());
 
   const config = agencyExtraFields[agencyId];
-  const agencyRef = agencyInputs.find(a => a.input === input);
-  if (!agencyRef) {
-    console.warn("Unknown agency for input:", val);
-    return;
-  }
-
   if (config) {
     // From field
     const fromDiv = document.createElement("div");
