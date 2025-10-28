@@ -288,7 +288,7 @@ function getSelectedAgencyId(val: string): string | null {
 function addAgencyInput(prefill?: string) {
   const div = document.createElement("div");
   const input = document.createElement("input");
-  input.className = "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--muted-teal)] mt-6";
+  input.className = "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)] mt-6";
   input.setAttribute("list", "agencyDatalist");
   input.placeholder = "Select or type agency to add...";
   if (prefill) input.value = agencyIdToDisplayName(prefill);
@@ -342,7 +342,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
     fromDiv.appendChild(fromLabel);
 
     const fromSelect = document.createElement("select");
-    fromSelect.className = "w-full max-w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--muted-teal)] bg-white";
+    fromSelect.className = "w-full max-w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)] bg-white";
     Object.keys(config.options).forEach(opt => {
       const optionEl = document.createElement("option");
       optionEl.value = opt;
@@ -362,7 +362,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
     toDiv.appendChild(toLabel);
 
     const toSelect = document.createElement("select");
-    toSelect.className = "w-full max-w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--muted-teal)] bg-white";
+    toSelect.className = "w-full max-w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)] bg-white";
     Object.keys(config.options).forEach(opt => {
       const optionEl = document.createElement("option");
       optionEl.value = opt;
