@@ -288,6 +288,7 @@ function getSelectedAgencyId(val: string): string | null {
 function addAgencyInput(prefill?: string) {
   const div = document.createElement("div");
   const input = document.createElement("input");
+  input.className = "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--muted-teal)] mt-6";
   input.setAttribute("list", "agencyDatalist");
   input.placeholder = "Select or type agency to add...";
   if (prefill) input.value = agencyIdToDisplayName(prefill);
@@ -334,12 +335,14 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
   if (config) {
     // From field
     const fromDiv = document.createElement("div");
-    fromDiv.className = "extraField";
+    fromDiv.className = "extraField flex flex-col md:flex-row md:items-center md:space-x-4";
     const fromLabel = document.createElement("label");
+    fromLabel.className = "block font-medium text-slate-700 mb-2 md:mb-0 w-40";
     fromLabel.textContent = config.labelFrom;
     fromDiv.appendChild(fromLabel);
 
     const fromSelect = document.createElement("select");
+    fromSelect.className = "w-full max-w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--muted-teal)] bg-white";
     Object.keys(config.options).forEach(opt => {
       const optionEl = document.createElement("option");
       optionEl.value = opt;
@@ -352,12 +355,14 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
 
     // To field
     const toDiv = document.createElement("div");
-    toDiv.className = "extraField";
+    toDiv.className = "extraField flex flex-col md:flex-row md:items-center md:space-x-4";
     const toLabel = document.createElement("label");
+    toLabel.className = "block font-medium text-slate-700 mb-2 md:mb-0 w-40";
     toLabel.textContent = config.labelTo;
     toDiv.appendChild(toLabel);
 
     const toSelect = document.createElement("select");
+    toSelect.className = "w-full max-w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--muted-teal)] bg-white";
     Object.keys(config.options).forEach(opt => {
       const optionEl = document.createElement("option");
       optionEl.value = opt;
@@ -432,9 +437,10 @@ function getFare(agencyInput, agencyId): number | undefined {
 
 // add a leg to the output display
 function appendLegDetails(div, fare, agencyInput, agencyId, discount, i) {
-  const h4Leg = document.createElement("h4");
-  h4Leg.textContent = `Leg ${i + 1}: ${getSelectedAgencyById(agencyId)?.Name}`;
-  div.appendChild(h4Leg);
+  const spanLeg = document.createElement("span");
+  spanLeg.className = "font-bold mt-6";
+  spanLeg.textContent = `Leg ${i + 1}: ${getSelectedAgencyById(agencyId)?.Name}`;
+  div.appendChild(spanLeg);
   const d = document.createElement("div");
   if (discount !== undefined) {
     if (discount >= 0) d.innerHTML = `Base fare: $${fare.toFixed(2)}<br>Transfer discount: -$${(discount-fare).toFixed(2)}<br><b>Subtotal fare:</b> $${discount.toFixed(2)}`
@@ -507,9 +513,10 @@ function updateTransferResults() {
   }
   
   finalResultsDiv.innerHTML = "";
-  const h3 = document.createElement("h3");
-  h3.textContent = `Total fare: $${runningTotal.toFixed(2)}`;
-  finalResultsDiv.appendChild(h3);
+  const span = document.createElement("span");
+  span.className = "font-bold mt-12";
+  span.textContent = `Total fare: $${runningTotal.toFixed(2)}`;
+  finalResultsDiv.appendChild(span);
 
   /*
     Clipper 2.0 handling
@@ -543,23 +550,24 @@ function updateTransferResults() {
   }
 
   finalResultsC2Div.innerHTML = "";
-  const h3c2 = document.createElement("h3");
-  h3c2.textContent = `Total fare with Clipper 2.0: $${runningTotalC2!.toFixed(2)}`;
-  finalResultsC2Div.appendChild(h3c2);
+  const spanc2 = document.createElement("span");
+  spanc2.className = "font-bold mt-12";
+  spanc2.textContent = `Total fare with Clipper 2.0: $${runningTotalC2!.toFixed(2)}`;
+  finalResultsC2Div.appendChild(spanc2);
 
   /*
     Final comparison output handling
   */
   const savings = runningTotal - runningTotalC2!; 
   comparisonDiv.innerHTML = "";
-  const h2comp = document.createElement("h2");
-  h2comp.textContent = `$${savings.toFixed(2)}`;
-  comparisonDiv.appendChild(h2comp);
+  const spancomp = document.createElement("span");
+  spancomp.textContent = `$${savings.toFixed(2)}`;
+  comparisonDiv.appendChild(spancomp);
 
   comparisonAnnualDiv.innerHTML = "";
-  const h2compAnnual = document.createElement("h2");
-  h2compAnnual.textContent = `$${(savings*500).toFixed(2)}`;
-  comparisonAnnualDiv.appendChild(h2compAnnual);
+  const spancompAnnual = document.createElement("span");
+  spancompAnnual.textContent = `$${(savings*500).toFixed(2)}`;
+  comparisonAnnualDiv.appendChild(spancompAnnual);
 }
 
 /*
@@ -603,9 +611,9 @@ share?.addEventListener("click", async () => {
       console.warn(err);
     }
   } else {
-    const shareDiv = document.getElementById("share-div")!;
+    const shareSpan = document.getElementById("share-span")!;
     navigator.clipboard.writeText(shareData.url);
-    shareDiv.innerText = "Copied link to clipboard!";
+    shareSpan.innerText = "Copied link to clipboard!";
   }
 });
 

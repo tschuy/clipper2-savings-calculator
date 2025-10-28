@@ -1,81 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Clipper 2.0 Savings Calculator</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-  <h1>Clipper 2.0 Savings Calculator</h1>
-  <div id="prose">
-    <p>In December, the Bay Area's transit card is getting an upgrade.</p>
-    <p>Instead of being penalized when changing from a bus to a train, or from one agency to another, Clipper 2.0 comes with free transfers. This means that no matter where you're going in the region, there's no need to worry about getting overcharged.</p>
-    <p>Interested in finding out how much you can save on your trips? Use this trip calculator to find out how much you can save in transfers starting December 10th.</p>
-  </div>
-  <div id="app">
-    <div class="input-column">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Clipper 2.0 Savings Calculator</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <style> :root { --transbay-red: #CC1939; --bay-gold: #ffb81c; --muted-teal: #4DB6AC; } </style>
+   </head>
+   <body class="bg-slate-50 text-slate-900 flex flex-col min-h-screen">
+      <header id="header" class="bg-[var(--transbay-red)] text-white py-4 shadow-md sticky top-0 z-10">
+         <div class="max-w-6xl mx-auto flex justify-between items-center px-4">
+            <h1 class="text-2xl font-bold">Clipper 2.0 Savings Calculator</h1>
+         </div>
+      </header>
+
+<section class="bg-[var(--muted-teal)] text-white py-16">
+    <div class="max-w-6xl mx-auto px-4 text-center md:text-left">
+      <p class="mb-4">
+        In December, the Bay Area's transit card is getting an upgrade.
+      </p>
+      <p class="mb-4">
+        Instead of being penalized when changing from a bus to a train, or from one agency to another, Clipper 2.0 comes with free transfers. This means that no matter where you're going in the region, there's no need to worry about getting overcharged.
+      </p>
+      <p class="mb-6">
+        Interested in finding out how much you can save on your trips? Use this trip calculator to find out how much you can save in transfers starting December 10th.
+      </p>
+    </div>
+  </section>
+
+  <section id="app" class="max-w-6xl mx-auto px-4 py-12 flex flex-col xl:flex-row gap-8">
+    <div class="flex-1 min-w-0 bg-white p-6 rounded-2xl shadow-md">
+      <h3 class="text-2xl font-semibold mb-4 text-[var(--transbay-red)]">Your Trip</h3>
       <div id="agencyListContainer"></div>
       <datalist id="agencyDatalist"></datalist>
     </div>
-    <div class="output-column output">
-      <div class="column left-column">
-        <h2 class="output">Before&nbsp;Clipper&nbsp;2.0</h2>
-        <div id="results"></div>
-        <div id="final-results"></div>
+
+    <div class="flex-1 min-w-0 bg-white p-6 rounded-2xl shadow-md">
+      <h3 class="text-2xl font-semibold mb-4 text-[var(--transbay-red)]">Your Savings</h3>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-lg text-left min-w-0">
+        <div class="min-w-0">
+          <h4 class="text-lg font-semibold mb-2 text-slate-600">Before Clipper 2.0</h4>
+          <div id="results"></div>
+          <div id="final-results"></div>
+        </div>
+        <div class="min-w-0">
+          <h4 class="text-lg font-semibold mb-2 text-slate-600">After Clipper 2.0</h4>
+          <div id="results-c2"></div>
+          <div id="final-results-c2"></div>
+        </div>
       </div>
-      <div class="column right-column">
-        <h2 class="output">After&nbsp;Clipper&nbsp;2.0</h2>
-        <div id="results-c2"></div>
+
+      <div class="text-center mt-6">
+        <h4 class="text-2xl font-semibold mb-2 text-slate-600">Total Savings</h4>
+        <div class="text-xl break-words">
+          With Clipper 2.0, you'll save <span id="comparison-inner" class="font-bold text-[var(--bay-gold)]">$—</span> per trip.<br/>
+          That's <span id="comparison-inner-annual" class="font-bold text-[var(--bay-gold)]">$—</span> over a year's commute (500 trips)!
+        </div>
         <div id="final-results-c2"></div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="output"><div id="comparison">With Clipper 2.0, you'll save...&nbsp;&nbsp;<div id="comparison-inner"><h2>$0.00</h2></div>&nbsp;&nbsp;per trip.<br>That's&nbsp;&nbsp;<div id="comparison-inner-annual"><h2>$0.00</h2></div>&nbsp;&nbsp;over a year's commute (500 trips)!</div>
-  <div id="share-div"><button id="share">Share your trip savings!</button><button id="clear">Start over</button></div>
-  </div>
-  <div class="faq">
-    <h3>Celebrate Clipper 2.0 by hiking with Hiking by Transit!</h3>
-    <div>
-      <span clsas="question">To celebrate the easier, more affordable regional transfers,</span>
-      <span class="answer"><a href="https://hikingbytransit.com">Hiking by Transit</a> will be leading a hike up to the summit of Mt. Tamalpais on Sunday, December 14th. East Bay to Marin trips will be up to 40% cheaper with Clipper 2.0!
-        <a href="https://www.eventbrite.com/e/hiking-by-transit-clipper-20-launch-celebration-mt-tamalpais-hike-tickets-1902777702329">RSVP on Eventbrite »</a>
-      </span>
+  <section class="bg-slate-100 py-12">
+    <div class="max-w-5xl mx-auto px-4 faq flex flex-col sm:flex-row justify-center items-center gap-4 pt-0">
+      <button id="share"
+        class="inline-block bg-[var(--bay-gold)] text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow hover:bg-yellow-400 transition">
+        Share your trip savings!
+      </button>
+
+      <button id="clear"
+        class="inline-block bg-[var(--transbay-red)] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-900 transition">
+        Start over
+      </button>
+      <span id="share-span" class="text-lg font-semibold mb-2 text-slate-600"></span>
     </div>
-    <hr>
-    <h3>Other benefits of Clipper 2.0</h3>
-    <div>
-      <span class="question">Tap and Ride with contactless credit & debit cards</span><br>
-      <p class="answer">
-        If you ride transit infrequently, or just don't want to have to keep track of yet another
-        card in your wallet, the new Tap and Ride system will allow you to use your normal contactless
-        credit or debit card to pay. This reduces complexity for riders and means less confusion for new riders,
-        occasional riders, and tourists.
-      </p>
-      <p class="answer">
-        Clipper cards will still be quite useful for many, though. Discount programs, like Clipper START, Clipper RTC,
-        and youth and senior discounts will not be available when paying with Tap and Ride. Likewise, transit benefits
-        programs and BART's High Volume Discount programs will not be available with Tap and Ride.
-      </p>
+  </section>
+
+  <section id="faq" class="bg-slate-100 py-12">
+    <div class="max-w-5xl mx-auto px-4 faq space-y-8">
+      <h3 class="text-2xl font-bold text-[var(--transbay-red)]">
+        Celebrate Clipper 2.0 by hiking with Hiking by Transit!
+      </h3>
+      <div class="bg-white p-6 rounded-2xl shadow-md">
+        <p class="mb-4">
+          <span class="font-semibold">To celebrate the easier, more affordable regional transfers,</span>
+          <a href="https://hikingbytransit.com" class="text-[var(--muted-teal)] hover:underline">Hiking by Transit</a>
+          will be leading a hike up to the summit of Mt. Tamalpais on Sunday, December 14th. East Bay to Marin trips will be up to 40% cheaper with Clipper 2.0!
+        </p>
+        <a href="https://www.eventbrite.com/e/hiking-by-transit-clipper-20-launch-celebration-mt-tamalpais-hike-tickets-1902777702329"
+          class="inline-block bg-[var(--bay-gold)] text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow hover:bg-yellow-400 transition">
+          RSVP on Eventbrite »
+        </a>
+      </div>
+      <hr class="border-slate-300" />
+      <h3 class="text-2xl font-bold text-[var(--transbay-red)]">Other benefits of Clipper 2.0</h3>
+
+      <div class="bg-white p-6 rounded-2xl shadow-md space-y-6">
+        <div>
+          <p class="font-semibold mb-2">Tap and Ride with contactless credit & debit cards</p>
+          <p class="text-slate-700 mb-2">
+            If you ride transit infrequently, or just don't want to have to keep track of yet another
+            card in your wallet, the new Tap and Ride system will allow you to use your normal contactless
+            credit or debit card to pay. This reduces complexity for riders and means less confusion for new riders,
+            occasional riders, and tourists.
+          </p>
+          <p class="text-slate-700">
+            Clipper cards will still be quite useful for many, though. Discount programs, like Clipper START, Clipper RTC,
+            and youth and senior discounts will not be available when paying with Tap and Ride. Likewise, transit benefits
+            programs and BART's High Volume Discount programs will not be available with Tap and Ride.
+          </p>
+        </div>
+
+        <div>
+          <p class="font-semibold mb-2">Fixing the BART excursion fare</p>
+          <p class="text-slate-700 mb-2">
+            Today, if you enter the BART faregates and then realize that they've suspended service,
+            tapping back out of the faregates will charge you $7.10. This fare was designed for people
+            who would want to either explore the system on an "excursion".
+          </p>
+          <p class="text-slate-700">
+            With Clipper 2.0, people who tap out less than 30 minutes after tapping in will not be charged
+            an excursion fare. This "grace period" is especially useful when BART experiences service outages,
+            since riders will be able to leave the platforms and catch alternative transit without having
+            to speak to a station agent.
+          </p>
+        </div>
+
+        <div>
+          <p class="font-semibold">
+            For more information on Clipper 2.0, visit the official <a href="https://www.futureofclipper.com/" target="_blank" class="text-[var(--muted-teal)] hover:underline">Future of Clipper website</a>.
+          </p>
+        </div>
+      </div>
     </div>
-    <div>
-      <span class="question">Fixing the BART excursion fare</span><br>
-      <p class="answer">
-        Today, if you enter the BART faregates and then realize that they've suspended service,
-        tapping back out of the faregates will charge you $7.10. This fare was designed for people
-        who would want to either explore the system on an "excursion".
-      </p>
-      <p class="answer">
-        With Clipper 2.0, people who tap out less than 30 minutes after tapping in will not be charged
-        an excursion fare. This "grace period" is especially useful when BART experiences service outages,
-        since riders will be able to leave the platforms and catch alternative transit without having
-        to speak to a station agent.
-      </p>
-    </div>
-    <div><p class="question">For more information on Clipper 2.0, visit the official <a href="https://www.futureofclipper.com/" rel="_blank">Future of Clipper website</a>.</p></div>
-  </div>
+  </section>
+
+  <footer class="bg-[var(--transbay-red)] text-white py-6 text-center mt-auto">
+    <p>Created by Evan Tschuy, Hiking by Transit. © 2025.</p>
+  </footer>
   <script type="module" src="app.js"></script>
-</body>
-</html>
+</body> </html>
