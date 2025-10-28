@@ -112,6 +112,9 @@ for (const [id, nickname] of Object.entries(agencyNicknames)) {
   nicknameLookup[nickname.toLowerCase()] = id;
 }
 
+// Agencies that need to be excluded - free or no Clipper fares, no default local fare (GF)
+const exlcudedAgencies = ['AM', 'AF', 'CE', 'CM', 'EE', 'EM', 'GP', 'MB', 'MC', 'PE', 'RG', 'MV', 'PG', 'SI', 'SS', 'TF', 'RV', 'GF'];
+
 // Agencies that have a local fare and a special fare that need to be treated differently
 const specialAgencies: GTFSAgency[] = [
   { Id: "AC:transbay", Name: "AC Transit - Transbay", LastGenerated: "" },
@@ -139,7 +142,6 @@ const agencyInputs: AgencyInput[] = [];
 
 const agencyList = document.getElementById("agencyDatalist") as HTMLDataListElement;
 const agencyListContainer = document.getElementById("agencyListContainer")!;
-const agencyDatalist = document.getElementById("agencyDatalist") as HTMLDataListElement;
 
 const resultsDiv = document.getElementById("results")!;
 const finalResultsDiv = document.getElementById("final-results")!;
@@ -195,7 +197,8 @@ function populateAgencyDatalist() {
   agencyList.innerHTML = "";
 
   for (const a of agencies) {
-    if (a.Id == "GF") continue; // only add the subtypes, as we need people to select specific runs
+    if (exlcudedAgencies.includes(a.Id)) continue;
+    console.log("adding", a);
     const nickname = agencyNicknames[a.Id] ?? null;
     const label = nickname
       ? `${nickname} - ${a.Name} (${a.Id})`
@@ -213,7 +216,7 @@ function getSelectedAgencyById(val: string) {
 }
 
 function agencyIdToDisplayName(val: string): string | null {
-  const optId = Array.from(agencyDatalist.options).find((o: HTMLOptionElement) => o.dataset.id === val);
+  const optId = Array.from(agencyList.options).find((o: HTMLOptionElement) => o.dataset.id === val);
   if (optId) return optId.value ?? null;
 
   return null;
@@ -269,7 +272,7 @@ function getSelectedAgencyId(val: string): string | null {
   if (!trimmed) return null;
 
   // 1. Exact datalist match
-  const opt = Array.from(agencyDatalist.options).find((o: HTMLOptionElement) => o.value === trimmed);
+  const opt = Array.from(agencyList.options).find((o: HTMLOptionElement) => o.value === trimmed);
   if (opt) return opt.dataset.id ?? null;
 
   // 2. Nickname match
