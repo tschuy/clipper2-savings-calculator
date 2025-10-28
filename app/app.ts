@@ -455,7 +455,7 @@ function updateTransferResults() {
     });
   } else {
     outputElements.forEach(element => {
-      element.style.display = 'flex';
+      element.style.display = 'grid';
     });
   }
 
