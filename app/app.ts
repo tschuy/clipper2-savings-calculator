@@ -1,4 +1,4 @@
-// interfaces defining structures for data pulled in from GTFS CSVs & XML API responses 
+// interfaces defining structures for data pulled in from GTFS CSVs & XML API responses
 interface FareTransferRule {
   from_leg_group_id: string | null;
   to_leg_group_id: string | null;
@@ -34,15 +34,22 @@ interface Stop {
   stop_name: string;
 }
 
+interface TripLeg {
+  agency_id: string;
+  fare_before_transfer: number;
+  clipper_1_discount: number;
+  clipper_2_discount: number;
+}
+
 /*
   Zone management
 
   Fares for zonal products are stored in fare_products with fare names using the scheme:
   * XX:matrix:XX:zoneId-XX:zoneId, for zonal fare products
   * BA:matrix:stationId-stationId, for BART fare products
-  
+
   To match this, zones here are stored such that the key of the dict is the zoneId, and the
-  value is the official human-readable name.  
+  value is the official human-readable name.
 */
 const ggtZones = {
   "San Francisco": "Zone 1: San Francisco",
@@ -229,6 +236,23 @@ function agencyIdToDisplayName(val: string): string | null {
   return "";
 }
 
+function normalizeFareProducts(fareProducts: FareProduct[]) {
+  for (const fareProduct of fareProducts) {
+    // any "youth-2" fare category needs to be modified to "youth"
+    if (fareProduct.rider_category_id === "youth-2") {
+      fareProduct.rider_category_id = "youth";
+    }
+
+    // split "smdy" into "smd" and "youth" to be consistent across all operators
+    if (fareProduct.rider_category_id === "smdy") {
+      fareProduct.rider_category_id = "youth";
+      fareProducts.push( {...fareProduct });
+      fareProduct.rider_category_id = "smd";
+    }
+  }
+  return fareProducts;
+}
+
 // load static files into globals
 async function loadStaticFiles() {
   const [rulesText, productsText, stopsText, xmlText] = await Promise.all([
@@ -248,13 +272,13 @@ async function loadStaticFiles() {
   // Add special agencies
   agencies.push(...specialAgencies);
 
+  fareProducts = normalizeFareProducts(fareProducts);
   populateAgencyDatalist();
 }
 
 function loadFromHash(h: string) {
   clearInputs();
   const segments = h.slice(1).split("#");
-  console.log(segments);
   for (const segment of segments) {
     const legInfo = segment.split(';');
     addAgencyInput(legInfo[0]);
@@ -274,20 +298,20 @@ function initializeInput() {
   agencyListContainer.style.display = "block";
   if (window.location.hash) {
     loadFromHash(window.location.hash);
-    window.location.hash = "";
+    removeHash();
   }
   addAgencyInput();
   updateTransferResults();
 }
 
 // resolve input string to an agency ID
-function getSelectedAgencyId(val: string): string | null {
+function getSelectedAgencyId(val: string): string {
   const trimmed = val.trim();
-  if (!trimmed) return null;
+  if (!trimmed) return "";
 
   // 1. Exact datalist match
   const opt = Array.from(agencyList.options).find((o: HTMLOptionElement) => o.value === trimmed);
-  if (opt) return opt.dataset.id ?? null;
+  if (opt) return opt.dataset.id ?? "";
 
   // 2. Nickname match
   const nicknameId = nicknameLookup[trimmed.toLowerCase()];
@@ -295,12 +319,11 @@ function getSelectedAgencyId(val: string): string | null {
 
   // 3. Partial name match
   const partial = agencies.find(a => a.Name.toLowerCase().includes(trimmed.toLowerCase()));
-  return partial ? partial.Id : null;
+  return partial ? partial.Id : "";
 }
 
 // create a new agency <input>
 function addAgencyInput(prefill?: string) {
-  console.log("called");
   const div = document.createElement("div");
   const input = document.createElement("input");
   input.className = "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)] mt-6";
@@ -338,7 +361,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
   if (!agencyId) {
     console.warn("Could not find agencyId for input:", val);
     return;
-  }  
+  }
 
   if (!agencyRef) {
     console.warn("Could not find agencyRef for input:", val);
@@ -412,7 +435,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
 */
 
 // static fares, ex: bus fares
-function getFareForAgency(input: string): FareProduct[] {
+function getFareForAgency(input: string, category: string = "adult"): FareProduct[] {
   if (!input) {return [] }
   const fare_product_id = input.includes(":") ? `${input}:single` : `${input}:local:single`;
 
@@ -420,24 +443,24 @@ function getFareForAgency(input: string): FareProduct[] {
     (fare) =>
       fare.fare_media_id === "clipper" &&
       fare.fare_product_id === fare_product_id &&
-      fare.rider_category_id === "adult" // TODO: allow selecting different rider categories?
+      fare.rider_category_id === category
   );
 }
 
 // dynamic / zonal fares, ex: BART, Caltrain
-function calculateFare(agencyId, from, to): number | undefined {
+function calculateFare(agencyId, from, to, category: string = "adult"): number | undefined {
   if (["GG", "SO", "SA", "CT"].includes(agencyId)) {
     return (fareProducts.filter(
       (fare) =>
       fare.fare_media_id === "clipper" &&
-      fare.rider_category_id === "adult" &&
+      fare.rider_category_id === category &&
       (fare.fare_product_id === `${agencyId}:matrix:${agencyId}:${from}-${agencyId}:${to}` || fare.fare_product_id === `${agencyId}:matrix:${agencyId}:${to}-${agencyId}:${from}`)
     )[0] || {})?.amount;
   } else if (agencyId == "BA") {
     return (fareProducts.filter(
       (fare) =>
       fare.fare_media_id === "clipper" &&
-      fare.rider_category_id === "adult" &&
+      fare.rider_category_id === category &&
       fare.fare_product_id === `BA:matrix:${from}-${to}`
     )[0] || {})?.amount;
   }
@@ -445,52 +468,64 @@ function calculateFare(agencyId, from, to): number | undefined {
 }
 
 // dispatch fare calculation to correct handler
-function getFare(agencyInput, agencyId): number | undefined {
+function getFare(agencyInput, agencyId, riderCategory: string): number | undefined {
   if (agencyId in agencyExtraFields) {
     if (agencyInput.extraFrom && agencyInput.extraTo) {
-      return calculateFare(agencyId, agencyInput.extraFrom?.value, agencyInput.extraTo?.value);
+      return calculateFare(agencyId, agencyInput.extraFrom?.value, agencyInput.extraTo?.value, riderCategory);
     }
   } else {
-    return getFareForAgency(agencyId)[0]?.amount;
+    return getFareForAgency(agencyId, riderCategory)[0]?.amount;
   }
 }
 
 // add a leg to the output display
-function appendLegDetails(div, agencyId, fare, discount, i) {
+function appendLegDetails(div, tripLeg, discountField, i) {
   const spanLeg = document.createElement("span");
   spanLeg.className = "font-bold mt-6";
-  spanLeg.textContent = `Leg ${i + 1}: ${agencyNicknames[agencyId] ?? getSelectedAgencyById(agencyId)?.Name}`;
+  spanLeg.textContent = `Leg ${i + 1}: ${agencyNicknames[tripLeg.agency_id] ?? getSelectedAgencyById(tripLeg.agency_id)?.Name}`;
   div.appendChild(spanLeg);
   const d = document.createElement("div");
   d.className = "mb-4"
-  if (discount !== undefined) {
-    if (discount >= 0) {
-      d.innerHTML = `Base fare: $${fare.toFixed(2)}<br>Transfer discount: -$${(fare - discount).toFixed(2)}<br><b>Subtotal fare:</b> $${discount.toFixed(2)}`
-    } else {
-      const discountedFare = Math.max(0, fare + discount);
-      const discountValue = fare - discountedFare;
-      d.innerHTML = `Base fare: $${fare.toFixed(2)}<br>Transfer discount: -$${discountValue.toFixed(2)}<br><b>Subtotal fare:</b> $${discountedFare.toFixed(2)}`
-    }
+  if (tripLeg[discountField] !== 0) {
+    d.innerHTML = `Base fare: $${tripLeg['fare_before_transfer'].toFixed(2)}<br>Transfer discount: -$${tripLeg[discountField].toFixed(2)}<br><b>Subtotal fare:</b> $${(tripLeg['fare_before_transfer'] - tripLeg[discountField]).toFixed(2)}`
   } else {
-    d.textContent = `Fare: $${fare.toFixed(2)}`
+    d.textContent = `Fare: $${tripLeg['fare_before_transfer'].toFixed(2)}`
   }
   div.appendChild(d);
 }
 
-function getTransferDiscount(fromId, toId): number | undefined {
-    // Golden Gate Ferry & Bay Ferry: transfer rules are global, not by line, so we need to trim the line suffix (GF:SSSF -> GF)
-    if (fromId.startsWith("GF")) { fromId = "GF" };
-    if (toId.startsWith("GF")) { toId = "GF" };
+function getTransferDiscount(fromId, toId, fare, category: string): number {
+  if (fromId == undefined) {
+    return 0;
+  }
+  // Golden Gate Ferry & Bay Ferry: transfer rules are global, not by line, so we need to trim the line suffix (GF:SSSF -> GF)
+  if (fromId.startsWith("GF")) { fromId = "GF" };
+  if (toId.startsWith("GF")) { toId = "GF" };
 
-    if (fromId.startsWith("SB")) { fromId = "SB" };
-    if (toId.startsWith("SB")) { toId = "SB" };
-    // take the first match as the correct match
-    const transferRule = fareRules.filter(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId)[0];
-    return transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount : undefined;
+  if (fromId.startsWith("SB")) { fromId = "SB" };
+  if (toId.startsWith("SB")) { toId = "SB" };
+  // take the first match as the correct match
+  const transferRule = fareRules.find(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId);
+  const discountValue = transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id && p.rider_category_id === category)?.amount : undefined;
+  if (discountValue === undefined) {
+    return 0;
+  }
+  if (discountValue < 0) {
+    return -discountValue;
+  } else {
+    return fare - discountValue;
+  }
+}
+
+const clipper2Discount = {
+  'smd': 1.45,
+  'youth': 1.45,
+  'adult': 2.85
 }
 
 // called when input is updated. calculates running fare totals for both C1 and C2 and creates output displays
 function updateTransferResults() {
+  // hide or unhide output as necessary
   const outputElements = document.querySelectorAll('.output') as NodeListOf<HTMLElement>;
   if (agencyInputs.length <= 1) {
     outputElements.forEach(element => {
@@ -502,99 +537,84 @@ function updateTransferResults() {
       element.style.display = 'grid';
     });
   }
-
-  let agencyId = getSelectedAgencyId(agencyInputs[0].input.value.trim());
-
-  /*
-    Clipper 1 handling
-  */
   resultsDiv.innerHTML = "";
-  const fare = getFare(agencyInputs[0], agencyId);
-  if (!fare) {
-    return;
-  }
-  let runningTotal = fare;
-  appendLegDetails(resultsDiv, agencyId, fare, undefined, 0);
+  resultsC2Div.innerHTML = "";
+  finalResultsDiv.innerHTML = "";
+  finalResultsC2Div.innerHTML = "";
 
+  const tripLegs: TripLeg[] = [];
+  const riderCategory = (document.getElementById("rider-category")! as HTMLSelectElement).value;
+
+  // skip the last, blank agencyInput
   for (let i = 0; i < agencyInputs.length - 1; i++) {
-    let fromId = getSelectedAgencyId(agencyInputs[i].input.value.trim());
-    let toId = getSelectedAgencyId(agencyInputs[i + 1].input.value.trim());
-    if (!fromId || !toId) continue;
-
-    const nextFare = getFare(agencyInputs[i+1], toId);
-    if (!nextFare) {
-      continue;
-    }
-
-    let displayToId = toId;
-    let discount = getTransferDiscount(fromId, toId);
-    appendLegDetails(resultsDiv, displayToId, nextFare, discount, i+1);
-
-    if (discount !== undefined) {
-      // positive discount is a replacement fare
-      if (discount > 0) {
-        runningTotal += discount;
-      // negative discount is a fare discount
-      } else if (discount < 0 && nextFare > -discount) {
-        runningTotal = runningTotal + nextFare + discount;
-      }
-    // no discount is no discount
+    const a = agencyInputs[i];
+    const previousLeg = tripLegs[tripLegs.length -1];
+    const agencyId = getSelectedAgencyId(a.input.value.trim());
+    const tripLeg: TripLeg = {'agency_id': agencyId, 'fare_before_transfer': 0, 'clipper_1_discount': 0, 'clipper_2_discount': 0};
+    if (agencyId === undefined) {
+      console.warn("could not find agencyId!", a, riderCategory)
+      return;
     } else {
-      runningTotal += nextFare;
+      tripLeg['angency_id'] = agencyId;
     }
+
+    const tripFare = getFare(a, agencyId, riderCategory);
+    if (tripFare === undefined) {
+      console.warn("could not find fare!", a, riderCategory)
+      return;
+    } else {
+      tripLeg['fare_before_transfer'] = tripFare;
+    }
+
+    if (previousLeg !== undefined) {
+      tripLeg.clipper_1_discount = getTransferDiscount(
+        previousLeg.agency_id,
+        tripLeg.agency_id,
+        tripLeg.fare_before_transfer,
+        riderCategory
+      );
+
+      if (previousLeg.agency_id === tripLeg.agency_id) {
+        // intra-agency transfers aren't changing in Clipper 2.0
+        tripLeg.clipper_2_discount = getTransferDiscount(
+          previousLeg.agency_id,
+          tripLeg.agency_id,
+          tripLeg.fare_before_transfer,
+          riderCategory
+        );
+      }
+      tripLeg.clipper_2_discount = Math.min(
+        previousLeg.fare_before_transfer!,
+        clipper2Discount[riderCategory],
+        tripLeg.fare_before_transfer
+      );
+    }
+    tripLegs.push(tripLeg);
   }
-  
+
+  let c1fare = 0;
+  let c2fare = 0;
+  for (let i = 0; i < tripLegs.length; i++) {
+    appendLegDetails(resultsDiv, tripLegs[i], "clipper_1_discount", i);
+    appendLegDetails(resultsC2Div, tripLegs[i], "clipper_2_discount", i);
+
+    c1fare += tripLegs[i].fare_before_transfer - tripLegs[i].clipper_1_discount;
+    c2fare += tripLegs[i].fare_before_transfer - tripLegs[i].clipper_2_discount;
+  }
+
   finalResultsDiv.innerHTML = "";
   const span = document.createElement("span");
   span.className = "font-bold mt-12";
-  span.textContent = `Total fare: $${runningTotal.toFixed(2)}`;
+  span.textContent = `Total fare: $${c1fare.toFixed(2)}`;
   finalResultsDiv.appendChild(span);
-
-  /*
-    Clipper 2.0 handling
-  */
-  resultsC2Div.innerHTML = "";
-  agencyId = getSelectedAgencyId(agencyInputs[0].input.value.trim());
-  let runningTotalC2 = getFare(agencyInputs[0], agencyId);
-  if (!runningTotalC2) {
-    return;
-  }
-  appendLegDetails(resultsC2Div, agencyId, runningTotalC2, undefined, 0);
-
-  let previousFare = runningTotalC2!;
-  let discount;
-  for (let i = 1; i < agencyInputs.length - 1; i++) {
-    if (previousFare < 2.85) {
-      discount = -previousFare
-    } else {
-      discount = -2.85;
-    }
-    agencyId = getSelectedAgencyId(agencyInputs[i].input.value.trim());
-    const previousAgencyId = getSelectedAgencyId(agencyInputs[i-1].input.value.trim());
-    if (previousAgencyId === agencyId) {
-      discount = getTransferDiscount(previousAgencyId, agencyId);
-    }
-    const nextFare = getFare(agencyInputs[i], agencyId)!;
-    if (!runningTotalC2) {
-      continue;
-    }
-    appendLegDetails(resultsC2Div, agencyId, nextFare, discount, i);
-    if (nextFare > -discount) {
-      runningTotalC2 = runningTotalC2 + nextFare + discount;
-    }
-    previousFare = nextFare;
-  }
 
   finalResultsC2Div.innerHTML = "";
   const spanc2 = document.createElement("span");
   spanc2.className = "font-bold mt-12";
-  spanc2.textContent = `Total fare with Clipper 2.0: $${runningTotalC2!.toFixed(2)}`;
+  spanc2.textContent = `Total fare with Clipper 2.0: $${c2fare.toFixed(2)}`;
   finalResultsC2Div.appendChild(spanc2);
 
-  /*
-    Final comparison output handling
-  */
-  const savings = runningTotal - runningTotalC2!; 
+  const savings = c1fare - c2fare!;
   comparisonDiv.innerHTML = "";
   const spancomp = document.createElement("span");
   spancomp.textContent = `$${savings.toFixed(2)}`;
@@ -609,8 +629,12 @@ function updateTransferResults() {
   comparisonAnnualDiv.appendChild(spancompAnnual);
 }
 
+function removeHash() {
+  history.pushState("", document.title, window.location.pathname + window.location.search);
+}
+
 function clearInputs() {
-  window.location.hash = "";
+  removeHash();
   agencyInputs.length = 0;
   agencyListContainer.innerHTML = "";
 }
@@ -618,6 +642,8 @@ function clearInputs() {
 /*
   Buttons
 */
+document.getElementById("rider-category")!.addEventListener("change", () => updateTransferResults());
+
 const loadHashButtons = document.querySelectorAll('.stored-trip') as NodeListOf<HTMLElement>;
 for (const b of loadHashButtons) {
   b.addEventListener("click", () => {

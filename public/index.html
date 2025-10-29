@@ -67,14 +67,22 @@
       <span>Enter each of the transit agencies you use on your trip in the order you take them.</span>
       <div id="agencyListContainer"></div>
       <datalist id="agencyDatalist"></datalist>
-      <div class="flex justify-center w-full mt-auto">
+      <div class="flex flex-col sm:flex-row justify-center w-full mt-auto">
         <button
-        class="inline-block bg-[var(--transbay-red)] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-[var(--transbay-teal)] transition mt-6 mr-6 self-end">
-        Calculate
-      </button>
+          class="inline-block bg-[var(--transbay-red)] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-[var(--transbay-teal)] transition mt-6 sm:mt-6 sm:mr-3 self-center sm:self-end w-full sm:w-auto">
+          Calculate
+        </button>
+
+        <select id="rider-category"
+          class="inline-block text-center bg-white text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)] transition mt-3 sm:mt-6 sm:mr-3 self-center sm:self-end w-full sm:w-auto">
+          <option value="adult">Adult</option>
+          <option value="youth">Youth</option>
+          <option value="smd">Senior/RTC</option>
+        </select>
+
         <button id="clear"
-          class="inline-block bg-white text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[var(--transbay-teal)] hover:text-white transition mt-6 self-end">
-          Start over
+          class="inline-block bg-white text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[var(--transbay-teal)] hover:text-white transition mt-3 sm:mt-6 self-center sm:self-end w-full sm:w-auto">
+          Reset
         </button>
       </div>
     </div>

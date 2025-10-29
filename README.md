@@ -8,7 +8,7 @@ The Clipper 2.0 Savings Calculator celebrates the coming implementation of the n
 
 Start the app in dev mode:
 
-`$ npx tsc app/app.ts --outDir public/ --target es2020 --watch`
+`$ npx tsc app/app.ts --outDir public/ --target es2021 --watch`
 
 Then start a webserver in the `public/` directory:
 
