@@ -126,12 +126,12 @@ const specialAgencies: GTFSAgency[] = [
   { Id: "GF:TBSF", Name: "Golden Gate Ferry - Tiburon", LastGenerated: "" },
   { Id: "GF:SSSF", Name: "Golden Gate Ferry - Sausalito", LastGenerated: "" },
   { Id: "GF:AISF", Name: "Golden Gate Ferry - Angel Island", LastGenerated: "" },
-  { Id: "SB:HB", Name: "San Francisco Bay Ferry: Harbor Bay", LastGenerated: "" },
-  { Id: "SB:SEA", Name: "San Francisco Bay Ferry: Alameda Seaplane", LastGenerated: "" },
-  { Id: "SB:OA", Name: "San Francisco Bay Ferry: Oakland & Alameda", LastGenerated: "" },
-  { Id: "SB:RCH", Name: "San Francisco Bay Ferry: Richmond", LastGenerated: "" },
-  { Id: "SB:SSF", Name: "San Francisco Bay Ferry: South San Francisco", LastGenerated: "" },
-  { Id: "SB:VJO", Name: "San Francisco Bay Ferry: Vallejo", LastGenerated: "" },
+  { Id: "SB:HB", Name: "SF Bay Ferry: Harbor Bay", LastGenerated: "" },
+  { Id: "SB:SEA", Name: "SF Bay Ferry: Alameda Seaplane", LastGenerated: "" },
+  { Id: "SB:OA", Name: "SF Bay Ferry: Oakland & Alameda", LastGenerated: "" },
+  { Id: "SB:RCH", Name: "SF Bay Ferry: Richmond", LastGenerated: "" },
+  { Id: "SB:SSF", Name: "SF Bay Ferry: South San Francisco", LastGenerated: "" },
+  { Id: "SB:VJO", Name: "SF Bay Ferry: Vallejo", LastGenerated: "" },
 ];
 
 let fareRules: FareTransferRule[] = [];
@@ -459,9 +459,10 @@ function getFare(agencyInput, agencyId): number | undefined {
 function appendLegDetails(div, agencyId, fare, discount, i) {
   const spanLeg = document.createElement("span");
   spanLeg.className = "font-bold mt-6";
-  spanLeg.textContent = `Leg ${i + 1}: ${getSelectedAgencyById(agencyId)?.Name}`;
+  spanLeg.textContent = `Leg ${i + 1}: ${agencyNicknames[agencyId] ?? getSelectedAgencyById(agencyId)?.Name}`;
   div.appendChild(spanLeg);
   const d = document.createElement("div");
+  d.className = "mb-4"
   if (discount !== undefined) {
     if (discount >= 0) {
       d.innerHTML = `Base fare: $${fare.toFixed(2)}<br>Transfer discount: -$${(fare - discount).toFixed(2)}<br><b>Subtotal fare:</b> $${discount.toFixed(2)}`
@@ -474,6 +475,18 @@ function appendLegDetails(div, agencyId, fare, discount, i) {
     d.textContent = `Fare: $${fare.toFixed(2)}`
   }
   div.appendChild(d);
+}
+
+function getTransferDiscount(fromId, toId): number | undefined {
+    // Golden Gate Ferry & Bay Ferry: transfer rules are global, not by line, so we need to trim the line suffix (GF:SSSF -> GF)
+    if (fromId.startsWith("GF")) { fromId = "GF" };
+    if (toId.startsWith("GF")) { toId = "GF" };
+
+    if (fromId.startsWith("SB")) { fromId = "SB" };
+    if (toId.startsWith("SB")) { toId = "SB" };
+    // take the first match as the correct match
+    const transferRule = fareRules.filter(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId)[0];
+    return transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount : undefined;
 }
 
 // called when input is updated. calculates running fare totals for both C1 and C2 and creates output displays
@@ -504,12 +517,8 @@ function updateTransferResults() {
   appendLegDetails(resultsDiv, agencyId, fare, undefined, 0);
 
   for (let i = 0; i < agencyInputs.length - 1; i++) {
-    const fromVal = agencyInputs[i].input.value.trim();
-    const toVal = agencyInputs[i + 1].input.value.trim();
-    if (!fromVal || !toVal) continue;
-
-    let fromId = getSelectedAgencyId(fromVal);
-    let toId = getSelectedAgencyId(toVal);
+    let fromId = getSelectedAgencyId(agencyInputs[i].input.value.trim());
+    let toId = getSelectedAgencyId(agencyInputs[i + 1].input.value.trim());
     if (!fromId || !toId) continue;
 
     const nextFare = getFare(agencyInputs[i+1], toId);
@@ -518,18 +527,7 @@ function updateTransferResults() {
     }
 
     let displayToId = toId;
-
-    // Golden Gate Ferry & Bay Ferry: transfer rules are global, not by line, so we need to trim the line suffix (GF:SSSF -> GF)
-    if (fromId.startsWith("GF")) { fromId = "GF" };
-    if (toId.startsWith("GF")) { toId = "GF" };
-
-    if (fromId.startsWith("SB")) { fromId = "SB" };
-    if (toId.startsWith("SB")) { toId = "SB" };
-  
-    // take the first match as the correct match
-    const transferRule = fareRules.filter(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId)[0];
-    const discount = transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount : undefined;
-  
+    let discount = getTransferDiscount(fromId, toId);
     appendLegDetails(resultsDiv, displayToId, nextFare, discount, i+1);
 
     if (discount !== undefined) {
@@ -572,12 +570,16 @@ function updateTransferResults() {
       discount = -2.85;
     }
     agencyId = getSelectedAgencyId(agencyInputs[i].input.value.trim());
+    const previousAgencyId = getSelectedAgencyId(agencyInputs[i-1].input.value.trim());
+    if (previousAgencyId === agencyId) {
+      discount = getTransferDiscount(previousAgencyId, agencyId);
+    }
     const nextFare = getFare(agencyInputs[i], agencyId)!;
     if (!runningTotalC2) {
       continue;
     }
     appendLegDetails(resultsC2Div, agencyId, nextFare, discount, i);
-    if (nextFare > 2.85) {
+    if (nextFare > -discount) {
       runningTotalC2 = runningTotalC2 + nextFare + discount;
     }
     previousFare = nextFare;
@@ -658,7 +660,7 @@ share?.addEventListener("click", async () => {
   const urlHash = calculateUrlHash();
   const shareData = {
     title: "Clipper 2.0 Savings Calculator",
-    text: `I'm could save ${comparisonAnnualDiv.innerText} every year with Clipper 2.0! How much will you save?\n`,
+    text: `I could save ${comparisonAnnualDiv.innerText} every year with Clipper 2.0! How much will you save?\n`,
     url: `${window.location.origin}/${urlHash}`,
   };
   if (navigator.share) {
