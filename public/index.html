@@ -38,7 +38,7 @@
   <section class="bg-[var(--transbay-teal)] text-white py-16">
     <div class="max-w-6xl mx-auto px-4 text-center md:text-left">
       <p class="mb-4 text-xl">
-        In December, the Bay Area's transit card is getting an upgrade.
+        In December, the Bay Area's transit card is getting an upgrade that will save you money and make it easier for you to travel throughout the nine Bay Area counties of Alameda, Contra Costa, Marin, Napa, San Francisco, San Mateo, Santa Clara, and Solano.
       </p>
       <p class="mb-4 text-lg">
         Instead of being penalized when changing from a bus to a train, or from one agency to another, Clipper 2.0 comes with free transfers. This means that no matter where you're going in the region, there's no need to worry about getting overcharged.
@@ -52,11 +52,16 @@
   <section id="app" class="max-w-7xl mx-auto px-4 py-12 flex flex-col xl:flex-row gap-8">
     <div class="flex-1 min-w-0 bg-white p-6 rounded-2xl shadow-md flex flex-col">
       <h3 class="text-2xl font-semibold mb-4 text-[var(--transbay-red)]">Your Trip</h3>
+      <span>Enter each of the transit agencies you use on your trip in the order you take them.</span>
       <div id="agencyListContainer"></div>
       <datalist id="agencyDatalist"></datalist>
       <div class="flex justify-center w-full mt-auto">
+        <button
+        class="inline-block bg-[var(--transbay-red)] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-[var(--transbay-teal)] transition mt-6 mr-6 self-end">
+        Calculate
+      </button>
         <button id="clear"
-          class="inline-block bg-[var(--transbay-red)] text-white font-semibold px-6 py-3 rounded-lg shadow hover:bg-blue-900 transition mt-6 self-end">
+          class="inline-block bg-white text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow hover:bg-[var(--transbay-teal)] hover:text-white transition mt-6 self-end">
           Start over
         </button>
       </div>
@@ -99,6 +104,14 @@
 
   <section id="faq" class="bg-slate-100 py-12">
     <div class="max-w-5xl mx-auto px-4 faq space-y-8">
+      <div class="flex items-center justify-center">
+        <div>
+          <a href="https://transbaycoalition.org/join"
+            class="inline-block text-2xl bg-[var(--bay-gold)] text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow hover:bg-yellow-400 transition">
+            Join the Transbay Coalition mailing list for transit tools and news! »
+          </a>
+        </div>
+      </div>
       <h3 class="text-2xl font-bold text-[var(--transbay-red)]">
         Celebrate Clipper 2.0 by hiking with Hiking by Transit!
       </h3>
@@ -153,11 +166,26 @@
           </p>
         </div>
       </div>
+
+      <hr class="border-slate-300" />
+      <h3 class="text-2xl font-bold text-[var(--transbay-red)]">About this tool</h3>
+
+      <div class="bg-white p-6 rounded-2xl shadow-md space-y-6">
+        <p class="text-slate-700">
+          The Transbay Coalition is a grassroots public transportation advocacy group championing bold near-term solutions to the Bay Area’s regional transportation crisis. Founded to campaign for dedicated bus-only lanes on the Bay Bridge and its approaches, we’re striving to create an equitable and efficient public transit system and reduce greenhouse gas emissions. <a href="https://www.transbaycoalition.org/about/" class="text-[var(--transbay-red)] hover:underline">Learn more about the Transbay Coalition »</a>
+        </p>
+        <p class="text-slate-700">
+          This website calculates the current fares and transfer policies using <i>GTFS</i> data from the Metropolitan Transportation Commission. This is the same data used by apps like Google Maps and Apple Maps to provide transit directions and fare information.
+        </p>
+        <p class="text-slate-700">
+          Fares on this website are an estimation only, based on the current information provided by the Metropolitan Transportation Commission. As they have not begun public advertising about the new system, some assumptions have been made. This website will be updated as possible to reflect new information.
+        </p>
+      </div>
     </div>
   </section>
 
   <footer class="bg-[var(--transbay-red)] text-white py-6 text-center mt-auto">
-    <p>Created by Evan Tschuy, Hiking by Transit for the Transbay Coalition. © 2025.</p>
+    <p>Created by Evan Tschuy, <a href="https://hikingbytransit.com">Hiking by Transit</a> for the Transbay Coalition. © 2025.</p>
   </footer>
   <script type="module" src="app.js"></script>
 </body> </html>
