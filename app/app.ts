@@ -251,23 +251,29 @@ async function loadStaticFiles() {
   populateAgencyDatalist();
 }
 
+function loadFromHash(h: string) {
+  clearInputs();
+  const segments = h.slice(1).split("#");
+  console.log(segments);
+  for (const segment of segments) {
+    const legInfo = segment.split(';');
+    addAgencyInput(legInfo[0]);
+    if (legInfo.length === 3) {
+      const from = decodeURIComponent(legInfo[1]);
+      const to = decodeURIComponent(legInfo[2]);
+      const ai = agencyInputs[agencyInputs.length-1];
+      ai.extraFrom.selectedIndex = Array.from(ai.extraFrom.options).findIndex(opt => opt instanceof HTMLOptionElement && opt.value === from);
+      ai.extraTo.selectedIndex = Array.from(ai.extraTo.options).findIndex(opt => opt instanceof HTMLOptionElement && opt.value === to);
+    }
+  }
+}
+
 // initialize input fields
 // process share hashes, if any, then add a new input field
 function initializeInput() {
   agencyListContainer.style.display = "block";
   if (window.location.hash) {
-    const segments = window.location.hash.slice(1).split("#");
-    for (const segment of segments) {
-      const legInfo = segment.split(';');
-      addAgencyInput(legInfo[0]);
-      if (legInfo.length === 3) {
-        const from = decodeURIComponent(legInfo[1]);
-        const to = decodeURIComponent(legInfo[2]);
-        const ai = agencyInputs[agencyInputs.length-1];
-        ai.extraFrom.selectedIndex = Array.from(ai.extraFrom.options).findIndex(opt => opt instanceof HTMLOptionElement && opt.value === from);
-        ai.extraTo.selectedIndex = Array.from(ai.extraTo.options).findIndex(opt => opt instanceof HTMLOptionElement && opt.value === to);
-      }
-    }
+    loadFromHash(window.location.hash);
     window.location.hash = "";
   }
   addAgencyInput();
@@ -294,6 +300,7 @@ function getSelectedAgencyId(val: string): string | null {
 
 // create a new agency <input>
 function addAgencyInput(prefill?: string) {
+  console.log("called");
   const div = document.createElement("div");
   const input = document.createElement("input");
   input.className = "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)] mt-6";
@@ -476,6 +483,7 @@ function updateTransferResults() {
     outputElements.forEach(element => {
       element.style.display = 'none';
     });
+    return;
   } else {
     outputElements.forEach(element => {
       element.style.display = 'grid';
@@ -599,17 +607,31 @@ function updateTransferResults() {
   comparisonAnnualDiv.appendChild(spancompAnnual);
 }
 
-/*
-  Buttons
-*/
-const clear = document.getElementById("clear");
-clear?.addEventListener("click", async () => {
+function clearInputs() {
   window.location.hash = "";
   agencyInputs.length = 0;
   agencyListContainer.innerHTML = "";
+}
+
+/*
+  Buttons
+*/
+const loadHashButtons = document.querySelectorAll('.stored-trip') as NodeListOf<HTMLElement>;
+for (const b of loadHashButtons) {
+  b.addEventListener("click", () => {
+    clearInputs();
+    loadFromHash(b.dataset.hash!);
+    addAgencyInput();
+    updateTransferResults();
+  });
+}
+
+const clear = document.getElementById("clear");
+clear?.addEventListener("click", () => {
+  clearInputs();
   addAgencyInput();
   updateTransferResults();
-})
+});
 
 function calculateUrlHash() {
   let urlHash = "";
