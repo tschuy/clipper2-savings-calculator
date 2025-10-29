@@ -112,8 +112,8 @@ for (const [id, nickname] of Object.entries(agencyNicknames)) {
   nicknameLookup[nickname.toLowerCase()] = id;
 }
 
-// Agencies that need to be excluded - free or no Clipper fares, no default local fare (GF)
-const exlcudedAgencies = ['AM', 'AF', 'CE', 'CM', 'EE', 'EM', 'GP', 'MB', 'MC', 'PE', 'RG', 'MV', 'PG', 'SI', 'SS', 'TF', 'RV', 'GF'];
+// Agencies that need to be excluded - free or no Clipper fares, no default local fare (GF, SB)
+const exlcudedAgencies = ['AM', 'AF', 'CE', 'CM', 'EE', 'EM', 'GP', 'MB', 'MC', 'PE', 'RG', 'MV', 'PG', 'SI', 'SS', 'TF', 'RV', 'GF', 'SB'];
 
 // Agencies that have a local fare and a special fare that need to be treated differently
 const specialAgencies: GTFSAgency[] = [
@@ -126,6 +126,12 @@ const specialAgencies: GTFSAgency[] = [
   { Id: "GF:TBSF", Name: "Golden Gate Ferry - Tiburon", LastGenerated: "" },
   { Id: "GF:SSSF", Name: "Golden Gate Ferry - Sausalito", LastGenerated: "" },
   { Id: "GF:AISF", Name: "Golden Gate Ferry - Angel Island", LastGenerated: "" },
+  { Id: "SB:HB", Name: "San Francisco Bay Ferry: Harbor Bay", LastGenerated: "" },
+  { Id: "SB:SEA", Name: "San Francisco Bay Ferry: Alameda Seaplane", LastGenerated: "" },
+  { Id: "SB:OA", Name: "San Francisco Bay Ferry: Oakland & Alameda", LastGenerated: "" },
+  { Id: "SB:RCH", Name: "San Francisco Bay Ferry: Richmond", LastGenerated: "" },
+  { Id: "SB:SSF", Name: "San Francisco Bay Ferry: South San Francisco", LastGenerated: "" },
+  { Id: "SB:VJO", Name: "San Francisco Bay Ferry: Vallejo", LastGenerated: "" },
 ];
 
 let fareRules: FareTransferRule[] = [];
@@ -151,6 +157,8 @@ const finalResultsC2Div = document.getElementById("final-results-c2")!;
 
 const comparisonDiv = document.getElementById("comparison-inner")!;
 const comparisonAnnualDiv = document.getElementById("comparison-inner-annual")!;
+
+const shareEl = document.getElementById("share-text")!;
 
 // basic CSV parsing - works with the input it's given, at least :)
 function parseCSV<T>(content: string): T[] {
@@ -200,8 +208,8 @@ function populateAgencyDatalist() {
     if (exlcudedAgencies.includes(a.Id)) continue;
     const nickname = agencyNicknames[a.Id] ?? null;
     const label = nickname
-      ? `${nickname} - ${a.Name} (${a.Id})`
-      : `${a.Name} (${a.Id})`;
+      ? `${nickname} - ${a.Name}`
+      : `${a.Name}`;
 
     const opt = document.createElement("option");
     opt.value = label;
@@ -218,7 +226,7 @@ function agencyIdToDisplayName(val: string): string | null {
   const optId = Array.from(agencyList.options).find((o: HTMLOptionElement) => o.dataset.id === val);
   if (optId) return optId.value ?? null;
 
-  return null;
+  return "";
 }
 
 // load static files into globals
@@ -309,6 +317,8 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
   const agencyId = getSelectedAgencyId(val);
   const agencyRef = agencyInputs.find(a => a.input === input);
 
+  shareEl.textContent = "";
+
   if (val === "") {
     // val is empty, so we want to remove the field
     const removalIndex = Array.prototype.indexOf.call(agencyListContainer.children, input.parentElement!);
@@ -327,6 +337,8 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
     console.warn("Could not find agencyRef for input:", val);
     return;
   }
+
+  input.value = agencyIdToDisplayName(agencyId);
 
   // Remove previous extra fields if they exist
   containerDiv.querySelectorAll(".extraField").forEach(e => e.remove());
@@ -497,15 +509,20 @@ function updateTransferResults() {
       continue;
     }
 
-    // Golden Gate Ferry: transfer rules are global, not by line, so we need to trim the line suffix (GF:SSSF -> GF)
+    let displayToId = toId;
+
+    // Golden Gate Ferry & Bay Ferry: transfer rules are global, not by line, so we need to trim the line suffix (GF:SSSF -> GF)
     if (fromId.startsWith("GF")) { fromId = "GF" };
     if (toId.startsWith("GF")) { toId = "GF" };
+
+    if (fromId.startsWith("SB")) { fromId = "SB" };
+    if (toId.startsWith("SB")) { toId = "SB" };
   
     // take the first match as the correct match
     const transferRule = fareRules.filter(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId)[0];
     const discount = transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount : undefined;
   
-    appendLegDetails(resultsDiv, toId, nextFare, discount, i+1);
+    appendLegDetails(resultsDiv, displayToId, nextFare, discount, i+1);
 
     if (discount !== undefined) {
       // positive discount is a replacement fare
@@ -575,7 +592,10 @@ function updateTransferResults() {
 
   comparisonAnnualDiv.innerHTML = "";
   const spancompAnnual = document.createElement("span");
-  spancompAnnual.textContent = `$${(savings*500).toFixed(2)}`;
+  spancompAnnual.textContent = '$' + new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(savings*500);
   comparisonAnnualDiv.appendChild(spancompAnnual);
 }
 
@@ -626,9 +646,8 @@ share?.addEventListener("click", async () => {
       console.warn(err);
     }
   } else {
-    const shareSpan = document.getElementById("share-span")!;
     navigator.clipboard.writeText(shareData.url);
-    shareSpan.innerText = "Copied link to clipboard!";
+    shareEl.innerText = "Copied link to clipboard!";
   }
 });
 
