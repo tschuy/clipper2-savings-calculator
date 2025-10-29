@@ -297,7 +297,8 @@ function loadFromHash(h: string) {
 function initializeInput() {
   agencyListContainer.style.display = "block";
   if (window.location.hash) {
-    loadFromHash(window.location.hash);
+
+    loadFromHash(decodeURIComponent(window.location.hash));
     removeHash();
   }
   addAgencyInput();
@@ -582,12 +583,13 @@ function updateTransferResults() {
           tripLeg.fare_before_transfer,
           riderCategory
         );
+      } else {
+        tripLeg.clipper_2_discount = Math.min(
+          previousLeg.fare_before_transfer!,
+          clipper2Discount[riderCategory],
+          tripLeg.fare_before_transfer
+        );
       }
-      tripLeg.clipper_2_discount = Math.min(
-        previousLeg.fare_before_transfer!,
-        clipper2Discount[riderCategory],
-        tripLeg.fare_before_transfer
-      );
     }
     tripLegs.push(tripLeg);
   }
@@ -602,6 +604,7 @@ function updateTransferResults() {
     c2fare += tripLegs[i].fare_before_transfer - tripLegs[i].clipper_2_discount;
   }
 
+  // Results display
   finalResultsDiv.innerHTML = "";
   const span = document.createElement("span");
   span.className = "font-bold mt-12";
