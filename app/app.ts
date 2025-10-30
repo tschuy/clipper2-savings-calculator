@@ -166,6 +166,7 @@ const comparisonDiv = document.getElementById("comparison-inner")!;
 const comparisonAnnualDiv = document.getElementById("comparison-inner-annual")!;
 
 const shareEl = document.getElementById("share-text")!;
+const riderCategorySelect = document.getElementById("rider-category")! as HTMLSelectElement;
 
 // basic CSV parsing - works with the input it's given, at least :)
 function parseCSV<T>(content: string): T[] {
@@ -279,6 +280,7 @@ async function loadStaticFiles() {
 function loadFromHash(h: string) {
   clearInputs();
   const segments = h.slice(1).split("#");
+  riderCategorySelect.value = segments.shift()!;
   for (const segment of segments) {
     const legInfo = segment.split(';');
     addAgencyInput(legInfo[0]);
@@ -297,7 +299,6 @@ function loadFromHash(h: string) {
 function initializeInput() {
   agencyListContainer.style.display = "block";
   if (window.location.hash) {
-
     loadFromHash(decodeURIComponent(window.location.hash));
     removeHash();
   }
@@ -544,7 +545,7 @@ function updateTransferResults() {
   finalResultsC2Div.innerHTML = "";
 
   const tripLegs: TripLeg[] = [];
-  const riderCategory = (document.getElementById("rider-category")! as HTMLSelectElement).value;
+  const riderCategory = riderCategorySelect.value;
 
   // skip the last, blank agencyInput
   for (let i = 0; i < agencyInputs.length - 1; i++) {
@@ -645,13 +646,13 @@ function clearInputs() {
 /*
   Buttons
 */
-document.getElementById("rider-category")!.addEventListener("change", () => updateTransferResults());
+riderCategorySelect.addEventListener("change", () => updateTransferResults());
 
 const loadHashButtons = document.querySelectorAll('.stored-trip') as NodeListOf<HTMLElement>;
 for (const b of loadHashButtons) {
   b.addEventListener("click", () => {
     clearInputs();
-    loadFromHash(b.dataset.hash!);
+    loadFromHash("#" + riderCategorySelect.value + b.dataset.hash!);
     addAgencyInput();
     updateTransferResults();
   });
@@ -665,7 +666,8 @@ clear?.addEventListener("click", () => {
 });
 
 function calculateUrlHash() {
-  let urlHash = "";
+  let urlHash = "#";
+  urlHash += riderCategorySelect.value;
   for (const ai of agencyInputs) {
     if (!ai.input.value.trim()) {
       continue;
