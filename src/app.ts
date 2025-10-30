@@ -327,13 +327,25 @@ function getSelectedAgencyId(val: string): string {
 // create a new agency <input>
 function addAgencyInput(prefill?: string) {
   const div = document.createElement("div");
+  const innerDiv = document.createElement("div");
+  innerDiv.className = "flex items-center w-full mt-4";
   const input = document.createElement("input");
-  input.className = "w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)] mt-6";
+  input.className = "flex-grow w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)]";
   input.setAttribute("list", "agencyDatalist");
   input.placeholder = "Select or type agency to add...";
   if (prefill) input.value = agencyIdToDisplayName(prefill);
 
-  div.appendChild(input);
+  const dismissButton = document.createElement("button");
+  dismissButton.className = "hidden ml-2 text-gray-500 hover:text-red-600 font-bold text-2xl leading-none shrink-0"
+  dismissButton.onclick = () => {
+    if (input.value === "") return;
+    input.value = "";
+    onAgencyListChange(input, div, false);
+  };
+  dismissButton.textContent = " ×";
+  innerDiv.appendChild(input);
+  innerDiv.appendChild(dismissButton);
+  div.appendChild(innerDiv);
   agencyListContainer.appendChild(div);
 
   agencyInputs.push({ input });
@@ -348,14 +360,18 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
   const val = input.value.trim();
   const agencyId = getSelectedAgencyId(val);
   const agencyRef = agencyInputs.find(a => a.input === input);
+  const button = input.nextSibling as HTMLElement;
+  if (button) {
+    button.classList.remove("hidden");
+  }
 
   shareEl.textContent = "";
 
   if (val === "") {
     // val is empty, so we want to remove the field
-    const removalIndex = Array.prototype.indexOf.call(agencyListContainer.children, input.parentElement!);
+    const removalIndex = Array.prototype.indexOf.call(agencyListContainer.children, input.parentElement!.parentElement!);
     agencyInputs.splice(removalIndex, 1);
-    input.parentElement!.remove();
+    input.parentElement!.parentElement!.remove();
     updateTransferResults();
     return;
   }
@@ -379,7 +395,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
   if (config) {
     // From field
     const fromDiv = document.createElement("div");
-    fromDiv.className = "extraField flex flex-col md:flex-row md:items-center md:space-x-4";
+    fromDiv.className = "extraField flex flex-col md:flex-row md:items-center md:space-x-4 pt-2";
     const fromLabel = document.createElement("label");
     fromLabel.className = "block font-medium text-slate-700 mb-2 md:mb-0 w-40";
     fromLabel.textContent = config.labelFrom;
@@ -399,7 +415,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
 
     // To field
     const toDiv = document.createElement("div");
-    toDiv.className = "extraField flex flex-col md:flex-row md:items-center md:space-x-4";
+    toDiv.className = "extraField flex flex-col md:flex-row md:items-center md:space-x-4 pt-2";
     const toLabel = document.createElement("label");
     toLabel.className = "block font-medium text-slate-700 mb-2 md:mb-0 w-40";
     toLabel.textContent = config.labelTo;
