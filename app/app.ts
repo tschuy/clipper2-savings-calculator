@@ -519,8 +519,8 @@ function getTransferDiscount(fromId, toId, fare, category: string): number {
 }
 
 const clipper2Discount = {
-  'smd': 1.45,
-  'youth': 1.45,
+  'smd': 1.40,
+  'youth': 1.40,
   'adult': 2.85
 }
 
