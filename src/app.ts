@@ -18,7 +18,7 @@ interface FareProduct {
   duration_start: string | null;
   duration_amount: string | null;
   duration_unit: string | null;
-  duration_type: string | null;
+  duration_type: string | null;transfer_
   rider_category_id: string | null;
   fare_media_id: string | null;
 }
@@ -140,6 +140,8 @@ const specialAgencies: GTFSAgency[] = [
   { Id: "SB:SSF", Name: "SF Bay Ferry: South San Francisco", LastGenerated: "" },
   { Id: "SB:VJO", Name: "SF Bay Ferry: Vallejo", LastGenerated: "" },
 ];
+
+const getNewIntraAgencyDiscountAgencies = ["AC"];
 
 let fareRules: FareTransferRule[] = [];
 let fareProducts: FareProduct[] = [];
@@ -622,20 +624,22 @@ function updateTransferResults() {
         );
 
       if (previousLeg.agency_id === tripLeg.agency_id) {
-        // intra-agency transfers aren't changing in Clipper 2.0
+        // intra-agency transfers aren't changing in Clipper 2.0, generally
         tripLeg.clipper_2_discount = getTransferDiscount(
           previousLeg.agency_id,
           tripLeg.agency_id,
           tripLeg.fare_before_transfer,
           riderCategory
         );
-        if (["AC"].includes(previousLeg.agency_id)) {
-          tripLeg.clipper_2_discount = getNewIntraAgencyDiscount(
+
+        // except where they are
+        if (getNewIntraAgencyDiscountAgencies.includes(previousLeg.agency_id)) {
+          tripLeg.clipper_2_discount = Math.min(getNewIntraAgencyDiscount(
             tripLegs,
             i,
             previousLeg.agency_id,
             riderCategory
-          );
+          ), tripLeg.fare_before_transfer);
         }
       } else {
         let transferDiscount = 0;
