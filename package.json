@@ -3,8 +3,8 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"build": "tsc src/* --outDir public/ --target es2021 && tailwindcss -i ./src/input.css -o ./public/styles.css --minify",
-		"watch:ts": "tsc src/* --outDir public/ --target es2021 --watch",
+		"build": "tsc src/app.ts --outDir public/ --target es2021 && tailwindcss -i ./src/input.css -o ./public/styles.css --minify",
+		"watch:ts": "tsc src/app.ts --outDir public/ --target es2021 --watch",
 		"build:css": "tailwindcss -i ./src/input.css -o ./public/styles.css --minify",
 		"watch:css": "tailwindcss -i ./src/input.css -o ./public/styles.css --watch"
 	},
