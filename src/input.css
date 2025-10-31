@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Work Sans', sans-serif;
+  --transbay-red: #cd482c;
+  --bay-gold: #ffb81c;
+  --transbay-teal: #1d3a47;
+  }
+
+  body {
+    font-family: var(--font-body);
+  }
+
+  h1,h2,h3,h4,h5,h6,button {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .output {
+    display: none;
+  }
+
+  .hidden {
+    display: none;
+  }

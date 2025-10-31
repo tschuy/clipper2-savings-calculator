@@ -3,15 +3,21 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"build": "tsc src/* --outDir public/ --target es2021",
-		"dev": "tsc src/* --outDir public/ --target es2021 --watch"
+		"build": "tsc src/* --outDir public/ --target es2021 && tailwindcss -i ./src/input.css -o ./public/styles.css --minify",
+		"watch:ts": "tsc src/* --outDir public/ --target es2021 --watch",
+		"build:css": "tailwindcss -i ./src/input.css -o ./public/styles.css --minify",
+		"watch:css": "tailwindcss -i ./src/input.css -o ./public/styles.css --watch"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^8.46.2",
+		"autoprefixer": "^10.4.21",
 		"eslint": "^9.38.0",
+		"postcss": "^8.5.6",
 		"wrangler": "^4.45.0"
 	},
 	"dependencies": {
+		"@tailwindcss/cli": "^4.1.16",
+		"tailwindcss": "^4.1.16",
 		"typescript": "^5.9.3"
 	}
 }

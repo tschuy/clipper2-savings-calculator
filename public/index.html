@@ -4,49 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Clipper 2.0 Savings Calculator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/styles.css">
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d9bc0055b77f47b1a24c5ae91e96fe9a"}'></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --font-heading: 'Poppins', sans-serif;
-      --font-body: 'Work Sans', sans-serif;
-    --transbay-red: #cd482c;
-    --bay-gold: #ffb81c;
-    --transbay-teal: #1d3a47;
-    }
-
-    body {
-      font-family: var(--font-body);
-    }
-
-    h1,h2,h3,h4,h5,h6,button {
-      font-family: var(--font-heading);
-      font-weight: 800;
-      letter-spacing: 0.5px;
-    }
-
-    .output {
-      display: none;
-    }
-
-    .hidden {
-      display: none;
-    }
-  </style>
-
 </head>
 <body class="bg-slate-50 text-slate-900 flex flex-col min-h-screen">
   <header id="header" class="bg-[var(--transbay-red)] text-white py-4 shadow-md sticky top-0 z-10">
-    <div class="max-w-6xl mx-auto flex justify-between items-center h-full">
-      <h1 class="text-2xl font-bold px-4"><a href="/">Clipper 2.0 Savings Calculator</a></h1>
-      <div class="bg-white rounded-xl p-2 mx-4 h-full flex items-center sm:max-h-16">
-        <a href="https://transbaycoalition.org"><img
-          src="/transbay.png"
-          alt="Transbay logo"
-          class="h-full w-auto object-contain sm:max-h-16 max-w-40"
-        /></a>
+    <div class="max-w-6xl mx-auto flex justify-between items-center
+                max-[545px]:flex-col max-[545px]:items-center px-4 max-[545px]:gap-4">
+      <h1 class="text-2xl text-center font-bold px-4">
+        <a href="/">Clipper 2.0 Savings Calculator</a>
+      </h1>
+      <div class="bg-white rounded-xl p-2 flex items-center h-full sm:max-h-16 gap-4">
+        <a href="https://transbaycoalition.org">
+          <img src="/transbay.png" alt="Transbay logo"
+               class="h-full w-auto object-contain sm:max-h-16 max-w-40" />
+        </a>
+        <a href="https://www.seamlessbayarea.org/">
+          <img src="/seamless.png" alt="Seamless Bay Area logo"
+               class="h-full w-auto object-contain sm:max-h-16 max-w-40" />
+        </a>
       </div>
     </div>
   </header>
@@ -155,24 +132,26 @@
           </a>
         </div>
       </div>
-      <h3 class="text-2xl font-bold text-[var(--transbay-red)]">
-        Celebrate Clipper 2.0 by hiking with Hiking by Transit!
-      </h3>
-      <div class="bg-white p-6 rounded-2xl shadow-md">
-        <p class="mb-4">
-          <span class="font-semibold">To celebrate the easier, more affordable regional transfers,</span>
-          <a href="https://hikingbytransit.com" class="text-[var(--transbay-red)] hover:underline">Hiking by Transit</a>
-          will be leading a hike up to the summit of Mt. Tamalpais on Sunday, December 14th. East Bay to Marin trips will be up to 40% cheaper with Clipper 2.0!
-        </p>
-        <a href="https://www.eventbrite.com/e/hiking-by-transit-clipper-20-launch-celebration-mt-tamalpais-hike-tickets-1902777702329"
-          class="inline-block bg-[var(--bay-gold)] text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow hover:bg-yellow-400 transition">
-          RSVP on Eventbrite »
-        </a>
+      <div class="bg-white p-6 rounded-2xl shadow-md space-y-6">
+        <h3 class="text-2xl font-bold text-[var(--transbay-red)]">
+          Celebrate Clipper 2.0 by hiking with Hiking by Transit!
+        </h3>
+        <div>
+          <p class="mb-4">
+            <span class="font-semibold">To celebrate the easier, more affordable regional transfers,</span>
+            <a href="https://hikingbytransit.com" class="text-[var(--transbay-red)] hover:underline">Hiking by Transit</a>
+            will be leading a hike up to the summit of Mt. Tamalpais on Sunday, December 14th. East Bay to Marin trips will be up to 40% cheaper with Clipper 2.0!
+          </p>
+          <a href="https://www.eventbrite.com/e/hiking-by-transit-clipper-20-launch-celebration-mt-tamalpais-hike-tickets-1902777702329"
+            class="inline-block bg-[var(--bay-gold)] text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow hover:bg-yellow-400 transition">
+            RSVP on Eventbrite »
+          </a>
+        </div>
       </div>
       <hr class="border-slate-300" />
-      <h3 class="text-2xl font-bold text-[var(--transbay-red)]">Other benefits of Clipper 2.0</h3>
 
       <div class="bg-white p-6 rounded-2xl shadow-md space-y-6">
+        <h3 class="text-2xl font-bold text-[var(--transbay-red)]">Other benefits of Clipper 2.0</h3>
         <div>
           <p class="font-semibold mb-2">Tap and Ride with contactless credit & debit cards</p>
           <p class="text-slate-700 mb-2">
@@ -211,14 +190,25 @@
       </div>
 
       <hr class="border-slate-300" />
-      <h3 class="text-2xl font-bold text-[var(--transbay-red)]">About this tool</h3>
 
       <div class="bg-white p-6 rounded-2xl shadow-md space-y-6">
+        <h3 class="text-2xl font-bold text-[var(--transbay-red)]">About us</h3>
         <p class="text-slate-700">
-          The Transbay Coalition is a grassroots public transportation advocacy group championing bold near-term solutions to the Bay Area’s regional transportation crisis. Founded to campaign for dedicated bus-only lanes on the Bay Bridge and its approaches, we’re striving to create an equitable and efficient public transit system and reduce greenhouse gas emissions. <a href="https://www.transbaycoalition.org/about/" class="text-[var(--transbay-red)] hover:underline">Learn more about the Transbay Coalition »</a>
+          The Transbay Coalition is a grassroots public transportation advocacy group championing bold near-term solutions to the Bay Area’s regional transportation crisis. Founded to campaign for dedicated bus-only lanes on the Bay Bridge and its approaches, we’re striving to create an equitable and efficient public transit system and reduce greenhouse gas emissions. <a href="https://www.transbaycoalition.org/" class="text-[var(--transbay-red)] hover:underline">Learn more about the Transbay Coalition »</a>
         </p>
         <p class="text-slate-700">
-          This website calculates the current fares and transfer policies using <i>GTFS</i> data from the Metropolitan Transportation Commission. This is the same data used by apps like Google Maps and Apple Maps to provide transit directions and fare information.
+          Seamless Bay Area is a not-for-profit project whose mission is to transform the Bay Area’s fragmented and inconvenient public transit into a world-class, unified, equitable, and widely-used system by building a diverse movement for change and promoting policy reforms. <a href="https://www.seamlessbayarea.org/" class="text-[var(--transbay-red)] hover:underline">Learn more about Seamless Bay Area »</a>
+        </p>
+        <p class="text-slate-700">
+          Hiking by Transit connects people in the Bay Area to our beautiful parks and preserves, car-free, by providing maps and hiking guides across the nine-county region and through advocacy for increased access and increased understanding. <a href="https://hikingbytransit.com/" class="text-[var(--transbay-red)] hover:underline">Visit Hiking by Transit »</a>
+        </p>
+      </div>
+      <hr class="border-slate-300" />
+      <div class="bg-white p-6 rounded-2xl shadow-md space-y-6">
+        <h3 class="text-2xl font-bold text-[var(--transbay-red)]">About this tool</h3>
+
+        <p class="text-slate-700">
+          This website calculates the current fares and transfer policies using GTFS data from the Metropolitan Transportation Commission. This is the same data used by apps like Google Maps and Apple Maps to provide transit directions and fare information.
         </p>
         <p class="text-slate-700">
           For Clipper 2.0 fares, the following rules are applied:
@@ -258,7 +248,8 @@
   </section>
 
   <footer class="bg-[var(--transbay-red)] text-white py-6 text-center mt-auto">
-    <p>Created by Evan Tschuy, <a href="https://hikingbytransit.com">Hiking by Transit</a> for the Transbay Coalition. © 2025.</p>
+    <p>Created by Evan Tschuy, <a href="https://hikingbytransit.com">Hiking by Transit</a> for the Transbay Coalition and Seamless Bay Area. © 2025.</p>
   </footer>
   <script type="module" src="app.js"></script>
-</body> </html>
+</body>
+</html>
