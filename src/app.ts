@@ -524,11 +524,14 @@ function getTransferDiscount(fromId, toId, fare, category: string): number {
   if (toId.startsWith("SB")) { toId = "SB" };
   // take the first match as the correct match
   const transferRule = fareRules.find(r => r.from_leg_group_id === fromId && r.to_leg_group_id === toId);
-  const discountValue = transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id && p.rider_category_id === category)?.amount : undefined;
+  let discountValue = transferRule ? fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id && p.rider_category_id === category)?.amount : undefined;
+  if (transferRule !== undefined && discountValue === undefined) {
+    discountValue = fareProducts.find(p => p.fare_product_id === transferRule.fare_product_id)?.amount;
+  }
+
   if (discountValue === undefined) {
     return 0;
-  }
-  if (discountValue < 0) {
+  } else if (discountValue < 0) {
     return -discountValue;
   } else {
     return fare - discountValue;
@@ -537,8 +540,24 @@ function getTransferDiscount(fromId, toId, fare, category: string): number {
 
 const clipper2Discount = {
   'smd': 1.40,
+  'smd-bart': 1.10,
   'youth': 1.40,
   'adult': 2.85
+}
+
+function getNewIntraAgencyDiscount(
+  tripLegs: TripLeg[],
+  index: number,
+  agencyId: string,
+  riderCategory: string): number
+{
+  if (agencyId === "AC") {
+    // AC Transit's new intraagency fare policy is to give *one* free transfer
+    if (index > 1 && tripLegs[index-2].agency_id == "AC") return 0;
+    return clipper2Discount[riderCategory];
+  }
+
+  return 0;
 }
 
 // called when input is updated. calculates running fare totals for both C1 and C2 and creates output displays
@@ -568,13 +587,17 @@ function updateTransferResults() {
     const a = agencyInputs[i];
     const previousLeg = tripLegs[tripLegs.length -1];
     const agencyId = getSelectedAgencyId(a.input.value.trim());
-    const tripLeg: TripLeg = {'agency_id': agencyId, 'fare_before_transfer': 0, 'clipper_1_discount': 0, 'clipper_2_discount': 0};
     if (agencyId === undefined) {
       console.warn("could not find agencyId!", a, riderCategory)
       return;
-    } else {
-      tripLeg['angency_id'] = agencyId;
     }
+
+    const tripLeg: TripLeg = {
+      'agency_id': agencyId,
+      'fare_before_transfer': 0,
+      'clipper_1_discount': 0,
+      'clipper_2_discount': 0
+    };
 
     const tripFare = getFare(a, agencyId, riderCategory);
     if (tripFare === undefined) {
@@ -591,6 +614,12 @@ function updateTransferResults() {
         tripLeg.fare_before_transfer,
         riderCategory
       );
+      console.log(previousLeg.agency_id,
+        tripLeg.agency_id,
+        tripLeg.fare_before_transfer,
+        riderCategory,
+        tripLeg
+        );
 
       if (previousLeg.agency_id === tripLeg.agency_id) {
         // intra-agency transfers aren't changing in Clipper 2.0
@@ -600,10 +629,25 @@ function updateTransferResults() {
           tripLeg.fare_before_transfer,
           riderCategory
         );
+        if (["AC"].includes(previousLeg.agency_id)) {
+          tripLeg.clipper_2_discount = getNewIntraAgencyDiscount(
+            tripLegs,
+            i,
+            previousLeg.agency_id,
+            riderCategory
+          );
+        }
       } else {
+        let transferDiscount = 0;
+        if (riderCategory === 'smd' && tripLeg.agency_id === 'BA') {
+          transferDiscount = clipper2Discount['smd-bart'];
+        } else {
+          transferDiscount = clipper2Discount[riderCategory];
+        }
+        // discount can be larger than the previous fare
+        // ex: AC Transit (2.50) to BART (5.00) results in a transfer discount of 2.85
         tripLeg.clipper_2_discount = Math.min(
-          previousLeg.fare_before_transfer!,
-          clipper2Discount[riderCategory],
+          transferDiscount,
           tripLeg.fare_before_transfer
         );
       }
