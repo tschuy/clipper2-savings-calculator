@@ -761,7 +761,7 @@ share?.addEventListener("click", async () => {
       console.warn(err);
     }
   } else {
-    navigator.clipboard.writeText(shareData.url);
+    navigator.clipboard.writeText(encodeURI(shareData.url));
     shareEl.innerText = "Copied link to clipboard!";
   }
 });
