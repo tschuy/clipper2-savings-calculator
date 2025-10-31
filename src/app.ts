@@ -397,7 +397,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
   if (config) {
     // From field
     const fromDiv = document.createElement("div");
-    fromDiv.className = "extraField fromto-divextraField fromto-div";
+    fromDiv.className = "extraField fromto-div";
     const fromLabel = document.createElement("label");
     fromLabel.className = "fromto-label";
     fromLabel.textContent = config.labelFrom;
