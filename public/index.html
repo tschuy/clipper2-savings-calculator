@@ -27,7 +27,7 @@
       </div>
     </div>
   </header>
-  <div class="min-[545px]:hidden bg-white rounded-xl p-2 flex items-center justify-center h-full sm:max-h-16 gap-4">
+  <div role="banner" class="min-[545px]:hidden bg-white rounded-xl p-2 flex items-center justify-center h-full sm:max-h-16 gap-4">
     <a href="https://transbaycoalition.org">
       <img src="/transbay.png" alt="Transbay logo"
            class="h-full w-auto object-contain sm:max-h-16 max-w-40" />
@@ -38,6 +38,7 @@
     </a>
   </div>
 
+  <main>
   <section class="bg-[var(--transbay-teal)] text-white py-16">
     <div class="max-w-6xl mx-auto px-4 text-center md:text-left">
       <p class="mb-4 text-xl">
@@ -64,7 +65,7 @@
           Calculate
         </button>
 
-        <select id="rider-category"
+        <select id="rider-category" aria-label="Rider Category"
           class="inline-block text-center bg-white text-[var(--transbay-red)] font-semibold px-6 py-3 rounded-lg shadow border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--transbay-teal)] transition mt-3 sm:mt-6 sm:mr-3 self-center sm:self-end w-full sm:w-auto">
           <option value="adult">Adult</option>
           <option value="youth">Youth</option>
@@ -81,7 +82,21 @@
     <div class="flex-1 min-w-0 bg-white p-6 rounded-2xl shadow-md flex flex-col">
       <h3 class="text-2xl font-semibold mb-4 text-[var(--transbay-red)]">Your Savings</h3>
       <div class="output">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-lg text-left min-w-0">
+        <div class="text-center">
+          <h4 class="text-2xl font-semibold mb-2 text-slate-600">Total Savings</h4>
+          <div class="text-xl break-words">
+            With Clipper 2.0, you'll save <span id="comparison-inner" class="gold-text-contrast font-bold text-2xl text-[var(--bay-gold)]">$—</span> per trip.<br/>
+            That's <span id="comparison-inner-annual" class="gold-text-contrast font-bold text-2xl text-[var(--bay-gold)]">$—</span> over a year's commute (500 trips)!
+          </div>
+        </div>
+        <div class="max-w-5xl mx-auto px-4 faq flex flex-col sm:flex-row justify-center items-center pt-0 output">
+          <button id="share"
+            class="inline-block bg-[var(--bay-gold)] text-[var(--transbay-red)] font-semibold text-2xl px-6 py-3 rounded-lg shadow hover:bg-yellow-400 transition self-end mt-6">
+            Share your trip savings!
+          </button>
+          <div id="share-text" class="text-lg font-semibold text-slate-600 text-center"></span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-lg text-left min-w-0 mt-6 mb-auto">
           <div class="min-w-0">
             <h4 class="text-lg font-semibold mb-2 text-slate-600 text-nowrap">Before Clipper 2.0</h4>
             <div id="results"></div>
@@ -93,22 +108,6 @@
             <div id="final-results-c2"></div>
           </div>
         </div>
-
-        <div class="text-center mt-6">
-          <h4 class="text-2xl font-semibold mb-2 text-slate-600">Total Savings</h4>
-          <div class="text-xl break-words">
-            With Clipper 2.0, you'll save <span id="comparison-inner" class="font-bold text-[var(--bay-gold)]">$—</span> per trip.<br/>
-            That's <span id="comparison-inner-annual" class="font-bold text-[var(--bay-gold)]">$—</span> over a year's commute (500 trips)!
-          </div>
-          <div id="final-results-c2"></div>
-        </div>
-      </div>
-      <div class="max-w-5xl mx-auto px-4 faq flex flex-col sm:flex-row justify-center items-center pt-0 output mt-auto">
-        <button id="share"
-          class="inline-block bg-[var(--bay-gold)] text-[var(--transbay-red)] font-semibold text-2xl px-6 py-3 rounded-lg shadow hover:bg-yellow-400 transition self-end mt-6">
-          Share your trip savings!
-        </button>
-        <div id="share-text" class="text-lg font-semibold text-slate-600 text-center"></span>
       </div>
     </div>
   </section>
@@ -194,7 +193,7 @@
 
         <div>
           <p class="font-semibold">
-            For more information on Clipper 2.0, visit the official <a href="https://www.futureofclipper.com/" target="_blank" class="text-[var(--transbay-red)] hover:underline">Future of Clipper website</a>. The Clipper Card <a href="https://www.clippercard.com/ClipperWeb/where-to-use.html" target="_blank" class="text-[var(--transbay-red)] hover:underline">Where to Use</a> page will also updated with the new transfer policies at launch.
+            For more information on Clipper 2.0, visit the official <a href="https://www.futureofclipper.com/" target="_blank" class="font-normal text-[var(--transbay-red)] hover:underline">Future of Clipper website</a>. The Clipper Card <a href="https://www.clippercard.com/ClipperWeb/where-to-use.html" target="_blank" class="font-normal text-[var(--transbay-red)] hover:underline">Where to Use</a> page will also updated with the new transfer policies at launch.
           </p>
         </div>
       </div>
@@ -204,13 +203,13 @@
       <div class="bg-white p-6 rounded-2xl shadow-md space-y-6">
         <h3 class="text-2xl font-bold text-[var(--transbay-red)]">About us</h3>
         <p class="text-slate-700">
-          The Transbay Coalition is a grassroots public transportation advocacy group championing bold near-term solutions to the Bay Area’s regional transportation crisis. Founded to campaign for dedicated bus-only lanes on the Bay Bridge and its approaches, we’re striving to create an equitable and efficient public transit system and reduce greenhouse gas emissions. <a href="https://www.transbaycoalition.org/" class="text-[var(--transbay-red)] hover:underline">Learn more about the Transbay Coalition »</a>
+          The Transbay Coalition is a grassroots public transportation advocacy group championing bold near-term solutions to the Bay Area’s regional transportation crisis. Founded to campaign for dedicated bus-only lanes on the Bay Bridge and its approaches, we’re striving to create an equitable and efficient public transit system and reduce greenhouse gas emissions. <b><a href="https://www.transbaycoalition.org/" class="text-[var(--transbay-red)] hover:underline">Learn more about the Transbay Coalition »</a></b>
         </p>
         <p class="text-slate-700">
-          Seamless Bay Area is a not-for-profit project whose mission is to transform the Bay Area’s fragmented and inconvenient public transit into a world-class, unified, equitable, and widely-used system by building a diverse movement for change and promoting policy reforms. <a href="https://www.seamlessbayarea.org/" class="text-[var(--transbay-red)] hover:underline">Learn more about Seamless Bay Area »</a>
+          Seamless Bay Area is a not-for-profit project whose mission is to transform the Bay Area’s fragmented and inconvenient public transit into a world-class, unified, equitable, and widely-used system by building a diverse movement for change and promoting policy reforms. <b><a href="https://www.seamlessbayarea.org/" class="text-[var(--transbay-red)] hover:underline">Learn more about Seamless Bay Area »</a></b>
         </p>
         <p class="text-slate-700">
-          Hiking by Transit connects people in the Bay Area to our beautiful parks and preserves, car-free, by providing maps and hiking guides across the nine-county region and through advocacy for increased access and increased understanding. <a href="https://hikingbytransit.com/" class="text-[var(--transbay-red)] hover:underline">Visit Hiking by Transit »</a>
+          Hiking by Transit connects people in the Bay Area to our beautiful parks and preserves, car-free, by providing maps and hiking guides across the nine-county region and through advocacy for increased access and increased understanding. <b><a href="https://hikingbytransit.com/" class="text-[var(--transbay-red)] hover:underline">Visit Hiking by Transit »</a></b>
         </p>
       </div>
       <hr class="border-slate-300" />
@@ -256,9 +255,10 @@
       </div>
     </div>
   </section>
+  </main>
 
   <footer class="bg-[var(--transbay-red)] text-white py-6 text-center mt-auto">
-    <p>Created by Evan Tschuy, <a href="https://hikingbytransit.com">Hiking by Transit</a> for the Transbay Coalition and Seamless Bay Area. © 2025.</p>
+    <p>Created by Evan Tschuy, <a href="https://hikingbytransit.com" class="underline decoration-white decoration-wavy underline-offset-2 hover:decoration-[var(--bay-gold)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 rounded-sm transition">Hiking by Transit</a> for the Transbay Coalition and Seamless Bay Area. © 2025.</p>
   </footer>
   <script type="module" src="app.js"></script>
 </body>

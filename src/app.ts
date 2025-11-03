@@ -332,6 +332,7 @@ function addAgencyInput(prefill?: string) {
   const innerDiv = document.createElement("div");
   innerDiv.className = "flex items-center w-full mt-4";
   const input = document.createElement("input");
+  input.ariaLabel = "Transit agency you use";
   input.className = "agency-input";
   input.setAttribute("list", "agencyDatalist");
   input.placeholder = "Select or type agency to add...";
@@ -405,6 +406,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
 
     const fromSelect = document.createElement("select");
     fromSelect.className = "fromto-select";
+    fromSelect.ariaLabel = "Traveling from station/zone";
     Object.keys(config.options).forEach(opt => {
       const optionEl = document.createElement("option");
       optionEl.value = opt;
@@ -425,6 +427,7 @@ function onAgencyListChange(input: HTMLInputElement, containerDiv: HTMLDivElemen
 
     const toSelect = document.createElement("select");
     toSelect.className = "fromto-select";
+    fromSelect.ariaLabel = "Traveling to station/zone";
     Object.keys(config.options).forEach(opt => {
       const optionEl = document.createElement("option");
       optionEl.value = opt;
