@@ -578,6 +578,11 @@ function updateTransferResults() {
     outputElements.forEach(element => {
       element.style.display = 'grid';
     });
+    // we only need to set it to flex here, we don't care about ever re-hiding it
+    const mobileStartHiddenElements = document.querySelectorAll('.mobile-start-hidden') as NodeListOf<HTMLElement>;
+    for (const e of mobileStartHiddenElements) {
+      e.style.display = 'flex';
+    }
   }
   resultsDiv.innerHTML = "";
   resultsC2Div.innerHTML = "";
@@ -619,12 +624,6 @@ function updateTransferResults() {
         tripLeg.fare_before_transfer,
         riderCategory
       );
-      console.log(previousLeg.agency_id,
-        tripLeg.agency_id,
-        tripLeg.fare_before_transfer,
-        riderCategory,
-        tripLeg
-        );
 
       if (previousLeg.agency_id === tripLeg.agency_id) {
         // intra-agency transfers aren't changing in Clipper 2.0, generally

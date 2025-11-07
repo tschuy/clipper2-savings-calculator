@@ -45,3 +45,9 @@ h1,h2,h3,h4,h5,h6,button {
 .dismiss-button {
   @apply ml-2 text-gray-500 hover:text-red-600 font-bold text-2xl leading-none shrink-0;
 }
+
+@media (max-width: 1280px) {
+  .mobile-start-hidden {
+    display: none;
+  }
+}
